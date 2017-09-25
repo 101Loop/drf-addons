@@ -10,6 +10,8 @@ class ValidateAndPerformView(APIView):
     renderer_classes = (JSONRenderer, )
     permission_classes = (AllowAny, )
     serializer_class = None
+    show_serializer = None
+    model = None
 
     def validated(self, serialized_data, *args, **kwargs):
         """
@@ -46,12 +48,16 @@ class ValidateAndPerformView(APIView):
         abstract = True
 
 
+class AddObjectView(ValidateAndPerformView):
+
+    def validated(self, serialized_data, *args, **kwargs):
+        serialized_data = self.show_serializer(serialized_data.save(created_by=self.request.user))
+        return serialized_data.data, status.HTTP_201_CREATED
+
+
 class PaginatedSearchView(ValidateAndPerformView):
     renderer_classes = (JSONRenderer, )
     permission_classes = (IsAuthenticated, )
-    serializer_class = None
-    show_serializer = None
-    model = None
 
     def validated(self, serialized_data, *args, **kwargs):
         searched_data = self.show_serializer(self.model.objects.extra(where=serialized_data.data['where'],
