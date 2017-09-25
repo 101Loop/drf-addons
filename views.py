@@ -49,6 +49,7 @@ class ValidateAndPerformView(APIView):
 
 
 class AddObjectView(ValidateAndPerformView):
+    permission_classes = (IsAuthenticated, )
 
     def validated(self, serialized_data, *args, **kwargs):
         serialized_data = self.show_serializer(serialized_data.save(created_by=self.request.user))
