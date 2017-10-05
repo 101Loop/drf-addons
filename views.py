@@ -61,7 +61,6 @@ class PaginatedSearchView(ValidateAndPerformView):
     permission_classes = (IsAuthenticated, )
 
     def validated(self, serialized_data, *args, **kwargs):
-        searched_data = self.show_serializer(self.model.objects.extra(where=serialized_data.data['where'],
-                                                                      order_by=serialized_data.data['order_by']),
+        searched_data = self.show_serializer(self.model.objects.extra(order_by=serialized_data.data['order_by']),
                                              many=True)
         return paginate_data(searched_data=searched_data, request_data=serialized_data), status.HTTP_202_ACCEPTED
