@@ -7,8 +7,8 @@ from .add_ons import JsonResponse, paginate_data
 
 
 class ValidateAndPerformView(APIView):
-    renderer_classes = (JSONRenderer, )
-    permission_classes = (AllowAny, )
+    renderer_classes = (JSONRenderer,)
+    permission_classes = (AllowAny,)
     serializer_class = None
     show_serializer = None
     model = None
@@ -49,7 +49,7 @@ class ValidateAndPerformView(APIView):
 
 
 class AddObjectView(ValidateAndPerformView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def validated(self, serialized_data, *args, **kwargs):
         serialized_data = self.show_serializer(serialized_data.save(created_by=self.request.user))
@@ -57,10 +57,13 @@ class AddObjectView(ValidateAndPerformView):
 
 
 class PaginatedSearchView(ValidateAndPerformView):
-    renderer_classes = (JSONRenderer, )
-    permission_classes = (IsAuthenticated, )
+    renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated,)
+
+    def fetch_data(self, serialized_data):
+        raise NotImplementedError('Implement Fetch Data')
 
     def validated(self, serialized_data, *args, **kwargs):
-        searched_data = self.show_serializer(self.model.objects.extra(order_by=serialized_data.data['order_by']),
-                                             many=True)
+        searched_data = self.fetch_data(serialized_data)
+
         return paginate_data(searched_data=searched_data, request_data=serialized_data), status.HTTP_202_ACCEPTED
