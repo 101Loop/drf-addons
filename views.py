@@ -49,11 +49,28 @@ class ValidateAndPerformView(APIView):
 
 
 class AddObjectView(ValidateAndPerformView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def validated(self, serialized_data, *args, **kwargs):
         serialized_data = self.show_serializer(serialized_data.save(created_by=self.request.user))
         return serialized_data.data, status.HTTP_201_CREATED
+
+    @csrf_exempt
+    def post(self, request):
+        if 'id' in request.data.keys():
+            try:
+                serialized_data = self.serializer_class(self.model.objects.get(pk=request.data['id']),
+                                                        data=request.data)
+            except self.model.DoesNotExist:
+                data = {'id': ["Object with provided ID does not exists"]}
+                return JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
+        else:
+            serialized_data = self.serializer_class(data=request.data)
+        if serialized_data.is_valid():
+            data, status_code = self.validated(serialized_data=serialized_data)
+            return JsonResponse(data, status=status_code)
+        else:
+            return JsonResponse(serialized_data.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 class PaginatedSearchView(ValidateAndPerformView):
