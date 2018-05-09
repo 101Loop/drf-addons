@@ -1,8 +1,6 @@
 import json
 from datetime import datetime, time
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-
 from django.http import HttpResponse
 
 
@@ -17,7 +15,7 @@ class DateTimeEncoder(json.JSONEncoder):
 
 
 class JsonResponse(HttpResponse):
-    def __init__(self, content, mimetype='application/json', status=None, content_type='application/json'):
+    def __init__(self, content, status=None, content_type='application/json'):
         data = dict()
         data['data'] = content
         data['status_code'] = status

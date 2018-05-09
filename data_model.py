@@ -2,7 +2,7 @@ from .db_type import UnixTimestampField, models
 
 
 class CreateUpdateModel(models.Model):
-    from django.utils.text import ugettext_lazy as _
+    from django.utils.text import gettext_lazy as _
     from django.contrib.auth import get_user_model
 
     create_date = UnixTimestampField(_('Create Date'), auto_now_add=True)
