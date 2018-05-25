@@ -94,3 +94,51 @@ def paginate_data(searched_data, request_data):
     return data
 
 
+def send_message(prop, message, subject, recip):
+    """
+    This function sends message to specified value.
+    Parameters
+    ----------
+    prop: str
+        This is the type of value. It can be "email" or "mobile"
+    message: str
+        This is the message that is to be sent to user.
+    subject: str
+        This is the subject that is to be sent to user, in case prop is an email.
+    recip: str
+        This is the recipient to whom EMail is being sent. This will be deprecated once SMS feature is brought in.
+
+    Returns
+    -------
+
+    """
+    from django.conf import settings
+    from django.core.mail import send_mail
+    import smtplib
+
+    sent = {'success': False, 'message': None}
+
+    if prop.lower() == 'email':
+        try:
+            send_mail(subject=subject,
+                      message=message,
+                      from_email=settings.EMAIL_FROM, recipient_list=[recip])
+            sent['message'] = 'Message sent successfully!'
+            sent['success'] = True
+        except smtplib.SMTPException as ex:
+            sent['message'] = 'Message sending failed!' + str(ex.args)
+            sent['success'] = False
+
+    elif prop.lower() == 'mobile':
+        if not sent['success']:
+            try:
+                send_mail(subject=subject,
+                          message=message,
+                          from_email=settings.EMAIL_FROM, recipient_list=[recip])
+                sent['message'] = 'Message sent successfully!'
+                sent['success'] = True
+            except smtplib.SMTPException as ex:
+                sent['message'] = 'Message sending Failed!' + str(ex.args)
+                sent['success'] = False
+
+    return sent
