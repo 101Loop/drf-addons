@@ -1,4 +1,4 @@
-from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.views.decorators.csrf import csrf_exempt
@@ -6,7 +6,7 @@ from rest_framework import status
 from .add_ons import JsonResponse, paginate_data
 
 
-class ValidateAndPerformView(APIView):
+class ValidateAndPerformView(GenericAPIView):
     renderer_classes = (JSONRenderer, )
     permission_classes = (AllowAny, )
     serializer_class = None
