@@ -1,4 +1,14 @@
 from rest_framework import serializers
+from rest_framework.filters import BaseFilterBackend
+
+
+class IsOwnerFilterBackend(BaseFilterBackend):
+    """
+    This filter only allows users to see their own object
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        return queryset.filter(created_by=request.user)
 
 
 class SearchSerializer(serializers.Serializer):
