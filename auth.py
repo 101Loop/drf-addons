@@ -111,7 +111,6 @@ def jwt_payload_handler(user):
 
     payload = {
         'user_id': user.pk,
-        'username': username,
         'is_admin': user.is_staff,
         'exp': datetime.utcnow() + api_settings.JWT_EXPIRATION_DELTA
     }
@@ -129,6 +128,27 @@ def jwt_payload_handler(user):
         payload['user_id'] = str(user.pk)
 
     payload[username_field] = username
+
+    # For Organization if user has any
+    if hasattr(user, 'organization'):
+        payload['organization'] = user.organization
+
+    # For assigned_to, if user has any
+    if hasattr(user, 'assigned_to'):
+        if user.assigned_to:
+            payload['assigned_to'] = {'name': user.assigned_to.name, 'mobile': user.assigned_to.mobile,
+                                      'email': user.assigned_to.email}
+        else:
+            payload['assigned_to'] = None
+
+    # For referral code, if user has any (Uncomment the code)
+    # from referral.models import ReferralCode
+    # try:
+    #     refferal_code = ReferralCode.objects.get(created_by=user).code
+    # except ReferralCode.DoesNotExists:
+    #     refferal_code = None
+    # payload['referral'] = refferal_code
+
 
     # Include original issued at time for a brand new token,
     # to allow token refresh

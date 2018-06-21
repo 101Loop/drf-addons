@@ -118,19 +118,9 @@ def send_message(prop, message, subject, recip):
 
     sent = {'success': False, 'message': None}
 
-    if prop.lower() == 'email':
-        try:
-            send_mail(subject=subject,
-                      message=message,
-                      from_email=settings.EMAIL_FROM, recipient_list=[recip])
-            sent['message'] = 'Message sent successfully!'
-            sent['success'] = True
-        except smtplib.SMTPException as ex:
-            sent['message'] = 'Message sending failed!' + str(ex.args)
-            sent['success'] = False
+    if hasattr(settings, 'EMAIL_HOST') and len(settings.EMAIL_HOST) > 1:
 
-    elif prop.lower() == 'mobile':
-        if not sent['success']:
+        if prop.lower() == 'email':
             try:
                 send_mail(subject=subject,
                           message=message,
@@ -138,7 +128,21 @@ def send_message(prop, message, subject, recip):
                 sent['message'] = 'Message sent successfully!'
                 sent['success'] = True
             except smtplib.SMTPException as ex:
-                sent['message'] = 'Message sending Failed!' + str(ex.args)
+                sent['message'] = 'Message sending failed!' + str(ex.args)
                 sent['success'] = False
+
+        elif prop.lower() == 'mobile':
+            if not sent['success']:
+                try:
+                    send_mail(subject=subject,
+                              message=message,
+                              from_email=settings.EMAIL_FROM, recipient_list=[recip])
+                    sent['message'] = 'Message sent successfully!'
+                    sent['success'] = True
+                except smtplib.SMTPException as ex:
+                    sent['message'] = 'Message sending Failed!' + str(ex.args)
+                    sent['success'] = False
+    else:
+        sent['message'] = 'Settings not defined!'
 
     return sent
