@@ -1,5 +1,7 @@
 # DRF Add Ons
 
+**A collection package for Django REST Framework**<br>
+
 `DRF Add Ons` is a collection package collected over a period of one year from various sources.<br>
 In each function/class I've specified its source in `docstrings` inside `Source` / `Sources`.<br> 
 Wherever there isn't any source, the module has been created by me for my personal use.<br>
@@ -15,3 +17,23 @@ he is an intern with `CMT` and is assigned with the task of making this as a `Py
 the latest standards. He is also an intern with `CMT` and is assigned with same task as `Mahen`. He updated various
 projects using this library to use `GenericAPIView`, such as `CreateAPIView`, `ListAPIView` rather than 
 `ValidateAndPerformView View`
+
+#### Installation
+
+- Download and Install via `pip`
+```
+pip install drfaddons
+```
+or<br>
+Download and Install via `easy_install`
+```
+easy_install drfaddons
+```
+- Add `drfaddons` in `INSTALLED_APPS`<br>
+```
+INSTALLED_APPS = [
+    ...
+    'drfaddons',
+    ...
+]
+```
