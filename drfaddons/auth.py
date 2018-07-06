@@ -9,7 +9,9 @@ class JSONWebTokenAuthenticationQS(BaseJSONWebTokenAuthentication):
     Header with a specific key only.
 
     This model will first look into HEADER and if the key is not found there, it looks for key in the body.
-    Key is also changable and can be set in DJango settings as JWT_AUTH_KEY with default value of Authorization.
+    Key is also changeable and can be set in Django settings as JWT_AUTH_KEY with default value of Authorization.
+
+    Source: Himanshu Shankar (https://github.com/iamhssingh)
     """
     from rest_framework_jwt.settings import api_settings
     from django.conf import settings
@@ -91,12 +93,29 @@ class JSONWebTokenAuthenticationQS(BaseJSONWebTokenAuthentication):
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
+    """
+    As the name suggests, it is used for CSRF Exemption. Alternative to @csrf_exempt
+    Source: https://stackoverflow.com/a/30875830
+    """
 
     def enforce_csrf(self, request):
         return  # To not perform the csrf check previously happening
 
 
 def jwt_payload_handler(user):
+    """
+    A custom JWT Payload Handler that adds certain extra data in payload such as:
+    email, mobile, name, organization, referral
+
+    Source: Himanshu Shankar (https://github.com/iamhssingh)
+    Parameters
+    ----------
+    user: get_user_model()
+
+    Returns
+    -------
+    payload: dict
+    """
     import uuid
 
     from calendar import timegm
@@ -152,6 +171,7 @@ def jwt_payload_handler(user):
 
     # Include original issued at time for a brand new token,
     # to allow token refresh
+
     if api_settings.JWT_ALLOW_REFRESH:
         payload['orig_iat'] = timegm(
             datetime.utcnow().utctimetuple()

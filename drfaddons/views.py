@@ -1,12 +1,19 @@
 from rest_framework.generics import GenericAPIView
-from rest_framework.renderers import JSONRenderer
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework import status
-from .add_ons import JsonResponse, paginate_data
 
 
 class ValidateAndPerformView(GenericAPIView):
+    """
+    An abstract class that provides a GenericAPIView in various projects for easely doing certain tasks.
+    Checks the validation with serializer_class and calls validated.
+    Was created by me not knowing about GenericAPIView.
+    May be labelled as deprecated and get removed in future versions.
+
+    Source: Himanshu Shankar (https://github.com/iamhssingh)
+    """
+    from django.views.decorators.csrf import csrf_exempt
+    from rest_framework.permissions import AllowAny
+    from rest_framework.renderers import JSONRenderer
+
     renderer_classes = (JSONRenderer, )
     permission_classes = (AllowAny, )
     serializer_class = None
@@ -37,6 +44,9 @@ class ValidateAndPerformView(GenericAPIView):
 
     @csrf_exempt
     def post(self, request):
+        from .add_ons import JsonResponse
+        from rest_framework import status
+
         serialized_data = self.serializer_class(data=request.data)
         if serialized_data.is_valid():
             data, status_code = self.validated(serialized_data=serialized_data)
@@ -49,14 +59,30 @@ class ValidateAndPerformView(GenericAPIView):
 
 
 class AddObjectView(ValidateAndPerformView):
+    """
+    Creates or updates an object.
+    Used in various projects by only specifying a few variables.
+    Was created by me not knowing about GenericAPIView.
+    May be labelled as deprecated and get removed in future versions.
+
+    Source: Himanshu Shankar (https://github.com/iamhssingh)
+    """
+    from django.views.decorators.csrf import csrf_exempt
+    from rest_framework.permissions import IsAuthenticated
+
     permission_classes = (IsAuthenticated,)
 
     def validated(self, serialized_data, *args, **kwargs):
+        from rest_framework import status
+
         serialized_data = self.show_serializer(serialized_data.save(created_by=self.request.user))
         return serialized_data.data, status.HTTP_201_CREATED
 
     @csrf_exempt
     def post(self, request):
+        from .add_ons import JsonResponse
+        from rest_framework import status
+
         if 'id' in request.data.keys():
             try:
                 serialized_data = self.serializer_class(self.model.objects.get(pk=request.data['id']),
@@ -72,15 +98,33 @@ class AddObjectView(ValidateAndPerformView):
         else:
             return JsonResponse(serialized_data.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
+    class Meta:
+        abstract = True
+
 
 class PaginatedSearchView(ValidateAndPerformView):
-    renderer_classes = (JSONRenderer, )
+    """
+    Provides querying via POST method along with Paginated View.
+    Used in various projects by only specifying a few variables.
+    Was created by me not knowing about GenericAPIView.
+    May be labelled as deprecated and get removed in future versions.
+
+    Source: Himanshu Shankar (https://github.com/iamhssingh)
+    """
+    from rest_framework.permissions import IsAuthenticated
+
     permission_classes = (IsAuthenticated, )
 
     def fetch_data(self, serialized_data):
         raise NotImplementedError('Implement Fetch Data')
 
     def validated(self, serialized_data, *args, **kwargs):
+        from .add_ons import paginate_data
+        from rest_framework import status
+
         searched_data = self.show_serializer(
             self.fetch_data(serialized_data).order_by(serialized_data.data['order_by'][0]), many=True)
         return paginate_data(searched_data=searched_data, request_data=serialized_data), status.HTTP_202_ACCEPTED
+
+    class Meta:
+        abstract = True

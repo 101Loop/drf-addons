@@ -2,8 +2,10 @@ from django.db import models
 
 
 class UnixTimestampField(models.DateTimeField):
-    """UnixTimestampField: creates a DateTimeField that is represented on the
+    """
+    UnixTimestampField: creates a DateTimeField that is represented on the
     database as a TIMESTAMP field rather than the usual DATETIME field.
+    Source: https://stackoverflow.com/a/11332150
     """
     def __init__(self, null=False, blank=False, **kwargs):
         # default for TIMESTAMP is NOT NULL unlike most fields, so we have to
