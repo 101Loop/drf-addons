@@ -7,7 +7,7 @@ setuptools.setup(
     name="drfaddons",
     version=__import__('drfaddons').__version__,
     author=__import__('drfaddons').__author__,
-    author_email="me@himanshus.com",
+    author_email="pypidev@civilmachines.com",
     description="A collection package for Django REST Framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -15,6 +15,7 @@ setuptools.setup(
     url="https://github.com/civilmachines/drf-addons",
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
     packages=setuptools.find_packages(),
+    install_requires=open('requirements.txt').read().split(),
     include_package_data=True,
     classifiers=(
         'Development Status :: 5 - Production/Stable',
