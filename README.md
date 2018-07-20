@@ -1,8 +1,8 @@
-# DRF Add Ons
+# Django REST Framework Add Ons
 
 **A collection package for Django REST Framework**<br>
 
-`DRF Add Ons` is a collection package collected over a period of one year from various sources.<br>
+`Django REST Framework Add Ons` is a collection package collected over a period of one year from various sources.<br>
 In each function/class I've specified its source in `docstrings` inside `Source` / `Sources`.<br> 
 Wherever there isn't any source, the module has been created by me for my personal use.<br>
 This may come in handy to all those who are going to use `Django REST Framework` for creating `API`.<br>

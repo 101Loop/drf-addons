@@ -1,9 +1,9 @@
-from rest_framework.generics import GenericAPIView
+from rest_framework.views import APIView
 
 
-class ValidateAndPerformView(GenericAPIView):
+class ValidateAndPerformView(APIView):
     """
-    An abstract class that provides a GenericAPIView in various projects for easely doing certain tasks.
+    An abstract class that provides a APIView in various projects for easily doing certain tasks.
     Checks the validation with serializer_class and calls validated.
     Was created by me not knowing about GenericAPIView.
     May be labelled as deprecated and get removed in future versions.
