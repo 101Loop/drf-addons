@@ -14,6 +14,7 @@ setuptools.setup(
     license=__import__('drfaddons').__license__,
     url="https://github.com/civilmachines/drf-addons",
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
+    install_requires=open('requirements.txt').read().split(),
     packages=setuptools.find_packages(),
     install_requires=open('requirements.txt').read().split(),
     include_package_data=True,
