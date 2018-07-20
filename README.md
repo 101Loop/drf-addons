@@ -1,3 +1,4 @@
+# Django REST Framework - Add Ons
 # Django REST Framework Add Ons
 
 **A collection package for Django REST Framework**<br>
@@ -7,9 +8,11 @@ In each function/class I've specified its source in `docstrings` inside `Source`
 Wherever there isn't any source, the module has been created by me for my personal use.<br>
 This may come in handy to all those who are going to use `Django REST Framework` for creating `API`.<br>
 
-I'll like to mention following names for certain contributions:
-- **[Civil Machines Technologies Private Limited](https://github.com/civilmahines)**: For providing me platform and funds
-for research work. This project is hosted currently with `CMT` only. 
+Contributors: **WE'RE LOOKING FOR SOMEONE WHO CAN CONTRIBUTE IN DOCS**
+- **[Civil Machines Technologies Private Limited](https://github.com/civilmahines)**: For providing me platform and
+funds for research work. This project is hosted currently with `CMT` only. 
+- **[Himanshu Shankar](https://github.com/iamhssingh)**: Himanshu Shankar has initiated this project and worked on this
+project to collect useful functions and classes that are being used in various projects.
 - [Mahen Gandhi](https://github.com/imlegend19): For making this repository into a library. At the time of this commit,
 he is an intern with `CMT` and is assigned with the task of making this as a `Python Package` hosted on 
 [PyPi](https://pypi.org/).
@@ -29,7 +32,7 @@ Download and Install via `easy_install`
 ```
 easy_install drfaddons
 ```
-- Add `drfaddons` in `INSTALLED_APPS`<br>
+- Add, if wanted, `drfaddons` in `INSTALLED_APPS` (This is although not required!)
 ```
 INSTALLED_APPS = [
     ...
