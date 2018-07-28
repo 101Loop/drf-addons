@@ -156,19 +156,19 @@ def paginate_data(searched_data, request_data):
     return data
 
 
-def send_message(prop, message, subject, recip):
+def send_message(message: str, subject: str, recip: list, recip_email: list):
     """
     Sends message to specified value.
     Source: Himanshu Shankar (https://github.com/iamhssingh)
     Parameters
     ----------
-    prop: str
-        Type of value. It can be "email" or "mobile"
     message: str
         Message that is to be sent to user.
     subject: str
         Subject that is to be sent to user, in case prop is an email.
-    recip: str
+    recip: list
+        Recipient to whom message is being sent.
+    recip_email: list
         Recipient to whom EMail is being sent. This will be deprecated once SMS feature is brought in.
 
     Returns
@@ -177,35 +177,59 @@ def send_message(prop, message, subject, recip):
     """
     from django.conf import settings
     from django.core.mail import send_mail
+
     import smtplib
+
+    import re
+
+    from hspsms import HSPConnector
 
     sent = {'success': False, 'message': None}
 
-    if hasattr(settings, 'EMAIL_HOST') and len(settings.EMAIL_HOST) > 1:
+    if not getattr(settings, 'EMAIL_HOST', None):
+        raise ValueError('EMAIL_HOST must be defined in django setting for sending mail.')
+    if not getattr(settings, 'EMAIL_FROM', None):
+        raise ValueError('EMAIL_FROM must be defined in django setting for sending mail. Who is sending email?')
 
-        if prop.lower() == 'email':
+    # For sms.hspsms.com
+    hspsms = getattr(settings, 'HSPSMS', None)
+    hspsms = HSPConnector(hspsms['USER'], hspsms['APIKEY'], getattr(hspsms, 'SENDER', None), getattr(hspsms, 'SMSTYPE',
+                                                                                                     'TRANS'))
+
+    if isinstance(recip, str):
+        # For backsupport
+        recip = [recip]
+
+    if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", recip[0]):
+        try:
+            send_mail(subject=subject,
+                      message=message,
+                      from_email=settings.EMAIL_FROM, recipient_list=[recip])
+            sent['message'] = 'Message sent successfully!'
+            sent['success'] = True
+        except smtplib.SMTPException as ex:
+            sent['message'] = 'Message sending failed!' + str(ex.args)
+            sent['success'] = False
+
+    else:
+        if not hspsms:
+            try:
+                hspsms.send_sms(recip, message)
+                sent['message'] = 'Message sent successfully!'
+                sent['success'] = True
+            except Exception as ex:
+                sent['message'] = 'Message sending Failed!' + str(ex.args)
+                sent['success'] = False
+
+        if not sent['success']:
             try:
                 send_mail(subject=subject,
                           message=message,
-                          from_email=settings.EMAIL_FROM, recipient_list=[recip])
+                          from_email=settings.EMAIL_FROM, recipient_list=[recip_email])
                 sent['message'] = 'Message sent successfully!'
                 sent['success'] = True
             except smtplib.SMTPException as ex:
-                sent['message'] = 'Message sending failed!' + str(ex.args)
+                sent['message'] = 'Message sending Failed!' + str(ex.args)
                 sent['success'] = False
-
-        elif prop.lower() == 'mobile':
-            if not sent['success']:
-                try:
-                    send_mail(subject=subject,
-                              message=message,
-                              from_email=settings.EMAIL_FROM, recipient_list=[recip])
-                    sent['message'] = 'Message sent successfully!'
-                    sent['success'] = True
-                except smtplib.SMTPException as ex:
-                    sent['message'] = 'Message sending Failed!' + str(ex.args)
-                    sent['success'] = False
-    else:
-        sent['message'] = 'Settings not defined!'
 
     return sent
