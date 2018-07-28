@@ -200,6 +200,10 @@ def send_message(message: str, subject: str, recip: list, recip_email: list):
         # For backsupport
         recip = [recip]
 
+    if isinstance(recip_email, str):
+        # For backsupport
+        recip = [recip_email]
+
     if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", recip[0]):
         try:
             send_mail(subject=subject,
