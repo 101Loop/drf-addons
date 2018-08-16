@@ -1,36 +1,6 @@
 from rest_framework.views import APIView
 
 
-def get_user(email: str, mobile: str, name: str=None):
-    """
-    This function will return the user with the given mobile number and
-    if no such user exists then it will return the user with the given email address
-    and even if no such user exists then it will create a new user with the provided details and will return it.
-    Parameters
-    ----------
-    email: str
-        EMail of the user
-    mobile: str
-        Mobile number of the user
-    name: str
-        Name of the user
-        Default value is None
-    """
-    from django.contrib.auth import get_user_model
-
-    User = get_user_model()
-
-    try:
-        user = User.objects.get(mobile=mobile)
-    except User.DoesNotExist:
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            user = User.objects.create_user(username=mobile, email=email, mobile=mobile, name=name, is_active=True,
-                                            password=User.objects.make_random_password())
-    return user
-
-
 class ValidateAndPerformView(APIView):
     """
     An abstract class that provides a APIView in various projects for easily doing certain tasks.
