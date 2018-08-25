@@ -193,8 +193,6 @@ def send_message(message: str, subject: str, recip: list, recip_email: list):
 
     # For sms.hspsms.com
     hspsms = getattr(settings, 'HSPSMS', None)
-    hspsms = HSPConnector(username=hspsms['USER'], apikey=hspsms['APIKEY'], sender=hspsms.get('SENDER', None),
-                          smstype=getattr(hspsms, 'SMSTYPE', 'TRANS'))
 
     if isinstance(recip, str):
         # For backsupport
@@ -216,6 +214,8 @@ def send_message(message: str, subject: str, recip: list, recip_email: list):
 
     else:
         if hspsms:
+            hspsms = HSPConnector(username=hspsms['USER'], apikey=hspsms['APIKEY'], sender=hspsms.get('SENDER', None),
+                                  smstype=getattr(hspsms, 'SMSTYPE', 'TRANS'))
             try:
                 hspsms.send_sms(recip, message)
                 sent['message'] = 'Message sent successfully!'
