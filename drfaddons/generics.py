@@ -29,6 +29,12 @@ class OwnerGenericAPIView(GenericAPIView):
     permission_classes = (IsAuthenticated, )
     renderer_classes = (JSONRenderer, )
     parser_classes = (JSONParser, )
+    
+    def check_object_permissions(self, request, obj):
+        if obj.created_by != request.user:
+            self.permission_denied(request,
+                                   message="Unsufficient permission. You are not the owner of requested object.")
+        super(OwnerGenericAPIView, self).check_object_permissions(request=request, obj=obj)
 
 
 # Concrete view classes that provide method handlers
@@ -62,8 +68,8 @@ class OwnerRetrieveAPIView(mixins.RetrieveModelMixin,
         return self.retrieve(request, *args, **kwargs)
 
 
-class DestroyAPIView(mixins.DestroyModelMixin,
-                     OwnerGenericAPIView):
+class OwnerDestroyAPIView(mixins.DestroyModelMixin,
+                          OwnerGenericAPIView):
     """
     Concrete view for deleting a CreateUpdateModel based model instance.
     """
@@ -71,8 +77,8 @@ class DestroyAPIView(mixins.DestroyModelMixin,
         return self.destroy(request, *args, **kwargs)
 
 
-class UpdateAPIView(OwnerUpdateModelMixin,
-                    OwnerGenericAPIView):
+class OwnerUpdateAPIView(OwnerUpdateModelMixin,
+                         OwnerGenericAPIView):
     """
     Concrete view for updating a CreateUpdateModel based model instance.
     """
@@ -83,9 +89,9 @@ class UpdateAPIView(OwnerUpdateModelMixin,
         return self.partial_update(request, *args, **kwargs)
 
 
-class ListCreateAPIView(mixins.ListModelMixin,
-                        OwnerCreateModelMixin,
-                        OwnerGenericAPIView):
+class OwnerListCreateAPIView(mixins.ListModelMixin,
+                             OwnerCreateModelMixin,
+                             OwnerGenericAPIView):
     """
     Concrete view for listing a queryset or creating a CreateUpdateModel based model instance.
     """
@@ -96,9 +102,9 @@ class ListCreateAPIView(mixins.ListModelMixin,
         return self.create(request, *args, **kwargs)
 
 
-class RetrieveUpdateAPIView(mixins.RetrieveModelMixin,
-                            OwnerUpdateModelMixin,
-                            OwnerGenericAPIView):
+class OwnerRetrieveUpdateAPIView(mixins.RetrieveModelMixin,
+                                 OwnerUpdateModelMixin,
+                                 OwnerGenericAPIView):
     """
     Concrete view for retrieving, updating a CreateUpdateModel based model instance.
     """
@@ -112,9 +118,9 @@ class RetrieveUpdateAPIView(mixins.RetrieveModelMixin,
         return self.partial_update(request, *args, **kwargs)
 
 
-class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
-                             mixins.DestroyModelMixin,
-                             OwnerGenericAPIView):
+class OwnerRetrieveDestroyAPIView(mixins.RetrieveModelMixin,
+                                  mixins.DestroyModelMixin,
+                                  OwnerGenericAPIView):
     """
     Concrete view for retrieving or deleting a CreateUpdateModel based model instance.
     """
@@ -125,10 +131,10 @@ class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
         return self.destroy(request, *args, **kwargs)
 
 
-class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
-                                   OwnerUpdateModelMixin,
-                                   mixins.DestroyModelMixin,
-                                   OwnerGenericAPIView):
+class OwnerRetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
+                                        OwnerUpdateModelMixin,
+                                        mixins.DestroyModelMixin,
+                                        OwnerGenericAPIView):
     """
     Concrete view for retrieving, updating or deleting a CreateUpdateModel based model instance.
     """
