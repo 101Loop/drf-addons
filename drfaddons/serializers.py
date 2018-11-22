@@ -11,20 +11,27 @@ class SearchSerializer(serializers.Serializer):
 
     Source: Himanshu Shankar (https://github.com/iamhssingh)
     """
-    DeprecationWarning('This class will be removed in future versions. Use Django REST Framework generic API view.')
+    DeprecationWarning('This class will be removed in future versions.'
+                       'Use Django REST Framework generic API view.')
     listf = ('id', 'create_date', 'last_modified')
-    order_by = serializers.ListField(child=serializers.ChoiceField(choices=listf+tuple('-'+x for x in listf)), default=['id'])
+    order_by = serializers.ListField(child=serializers.ChoiceField(
+        choices=listf+tuple('-'+x for x in listf)), default=['id'])
     paginator = serializers.IntegerField(default=10)
     page = serializers.IntegerField(default=1)
 
 
 class ByOwnerSerializer(serializers.ModelSerializer):
+    created_by = serializers.HiddenField(
+        default=serializers.CurrentUserDefault())
 
-    def validate(self, attrs):
-        model = self.Meta.model
-
-        if model.objects.filter(created_by=self.context['request'].user).count() > 0:
-            raise serializers.ValidationError(detail=_('Logged in user already has %s object. Can not create another'
-                                                       ' object.' % (model._meta.verbose_name.title())))
-
-        return attrs
+    # def validate(self, attrs):
+    #     model = self.Meta.model
+    #
+    #     if model.objects.filter(
+    #             created_by=self.context['request'].user).count() > 0:
+    #         raise serializers.ValidationError(
+    #             detail=_('Logged in user already has %s object.'
+    #                      'Can not create another object.' % (
+    #                 model._meta.verbose_name.title())))
+    #
+    #     return attrs

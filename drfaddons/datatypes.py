@@ -3,6 +3,7 @@ from django.db import models
 
 class UnixTimestampField(models.DateTimeField):
     """
+    TODO: Remove this eventually as it doesn't support certain database backend
     UnixTimestampField: creates a DateTimeField that is represented on the
     database as a TIMESTAMP field rather than the usual DATETIME field.
     Source: https://stackoverflow.com/a/11332150

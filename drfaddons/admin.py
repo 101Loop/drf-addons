@@ -31,7 +31,8 @@ class CreateUpdateAdmin(admin.ModelAdmin):
 
 class CreateUpdateHiddenAdmin(CreateUpdateAdmin):
     """
-    Hide a model from Application page but allows addition of object from inside of other models.
+    Hide a model from Application page but allows addition of object
+    from inside of other models.
     """
     def get_model_perms(self, request):
         return {}

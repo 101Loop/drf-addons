@@ -4,12 +4,15 @@ from rest_framework.authentication import SessionAuthentication
 
 class JSONWebTokenAuthenticationQS(BaseJSONWebTokenAuthentication):
     """
-    This is a custom JWT Authentication class. This has inherited BaseJsonWebTokenAuthentication and also used some
-    of the codes from traditional JSONWebTokenAuthentication class. The traditional one can only authenticate from
-    Header with a specific key only.
+    This is a custom JWT Authentication class. This has inherited
+    BaseJsonWebTokenAuthentication and also used some of the codes from
+    traditional JSONWebTokenAuthentication class. The traditional one
+    can only authenticate from Header with a specific key only.
 
-    This model will first look into HEADER and if the key is not found there, it looks for key in the body.
-    Key is also changeable and can be set in Django settings as JWT_AUTH_KEY with default value of Authorization.
+    This model will first look into HEADER and if the key is not found
+    there, it looks for key in the body.
+    Key is also changeable and can be set in Django settings as
+    JWT_AUTH_KEY with default value of Authorization.
 
     Source: Himanshu Shankar (https://github.com/iamhssingh)
     """
@@ -23,7 +26,8 @@ class JSONWebTokenAuthenticationQS(BaseJSONWebTokenAuthentication):
 
     def get_authorization(self, request):
         """
-        This function extracts the authorization JWT string. It first looks for specified key in header and then looks
+        This function extracts the authorization JWT string. It first
+        looks for specified key in header and then looks
         for the same in body part.
 
         Parameters
@@ -34,14 +38,16 @@ class JSONWebTokenAuthenticationQS(BaseJSONWebTokenAuthentication):
         Returns
         -------
         auth: str
-            Return request's 'JWT_AUTH_KEY:' content from body or Header, as a bytestring.
+            Return request's 'JWT_AUTH_KEY:' content from body or
+            Header, as a bytestring.
 
             Hide some test client ickyness where the header can be unicode.
         """
         from django.utils.six import text_type
         from rest_framework import HTTP_HEADER_ENCODING
 
-        auth = request.data.get(self.key, b'') or request.META.get(self.header_key, b'')
+        auth = request.data.get(self.key, b'') or request.META.get(
+            self.header_key, b'')
 
         if isinstance(auth, text_type):
             # Work around django test client oddness
@@ -50,7 +56,8 @@ class JSONWebTokenAuthenticationQS(BaseJSONWebTokenAuthentication):
 
     def get_jwt_value(self, request):
         """
-        This function has been overloaded and it returns the proper JWT auth string.
+        This function has been overloaded and it returns the proper JWT
+        auth string.
         Parameters
         ----------
         request: HttpRequest
@@ -94,7 +101,8 @@ class JSONWebTokenAuthenticationQS(BaseJSONWebTokenAuthentication):
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
     """
-    As the name suggests, it is used for CSRF Exemption. Alternative to @csrf_exempt
+    As the name suggests, it is used for CSRF Exemption. Alternative to
+    @csrf_exempt
     Source: https://stackoverflow.com/a/30875830
     """
 
@@ -104,7 +112,8 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 def jwt_payload_handler(user):
     """
-    A custom JWT Payload Handler that adds certain extra data in payload such as:
+    A custom JWT Payload Handler that adds certain extra data in
+    payload such as:
     email, mobile, name, organization, referral
 
     Source: Himanshu Shankar (https://github.com/iamhssingh)
@@ -155,7 +164,8 @@ def jwt_payload_handler(user):
     # For assigned_to, if user has any
     if hasattr(user, 'assigned_to'):
         if user.assigned_to:
-            payload['assigned_to'] = {'name': user.assigned_to.name, 'mobile': user.assigned_to.mobile,
+            payload['assigned_to'] = {'name': user.assigned_to.name,
+                                      'mobile': user.assigned_to.mobile,
                                       'email': user.assigned_to.email}
         else:
             payload['assigned_to'] = None

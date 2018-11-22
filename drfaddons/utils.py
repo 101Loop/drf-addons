@@ -6,7 +6,7 @@ class DateTimeEncoder(json.JSONEncoder):
     """Date Time Encoder for JSON. I do not use this anymore
     Can't identify original source.
     Sources: [https://gist.github.com/dannvix/29f53570dfde13f29c35,
-    https://www.snip2code.com/Snippet/106599/Custom-Django-JsonResponse-which-support]
+    https://www.snip2code.com/Snippet/106599/]
     """
     def default(self, obj):
         from datetime import datetime
@@ -23,7 +23,7 @@ class JsonResponse(HttpResponse):
     A HttpResponse that responses in JSON. Used in APIs.
     Can't identify original source.
     Sources: [https://gist.github.com/dannvix/29f53570dfde13f29c35,
-    https://www.snip2code.com/Snippet/106599/Custom-Django-JsonResponse-which-support]
+    https://www.snip2code.com/Snippet/106599/]
     """
     def __init__(self, content, status=None, content_type='application/json'):
         data = dict()
@@ -55,7 +55,8 @@ def json_serial(obj):
 
 def get_client_ip(request):
     """
-    Fetches the IP address of a client from Request and return in proper format.
+    Fetches the IP address of a client from Request and
+    return in proper format.
     Source: https://stackoverflow.com/a/4581997
     Parameters
     ----------
@@ -119,7 +120,8 @@ def paginate_data(searched_data, request_data):
     Parameters
     ----------
     searched_data: Serializer.data
-                    It is the data received from queryset. It uses show_serializer
+                    It is the data received from queryset. It uses
+                    show_serializer
     request_data: Serializer.data
                     It is the request data. It uses serializer_class.
 
@@ -130,7 +132,8 @@ def paginate_data(searched_data, request_data):
     from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
     if int(request_data.data['paginator']) > 0:
-        paginator = Paginator(searched_data.data, request_data.data['paginator'])
+        paginator = Paginator(searched_data.data,
+                              request_data.data['paginator'])
         try:
             curr = paginator.page(request_data.data['page'])
         except PageNotAnInteger:
@@ -151,7 +154,8 @@ def paginate_data(searched_data, request_data):
             data['previous'] = -1
         data['objects'] = curr.object_list
     else:
-        data = {'objects': searched_data.data, 'previous': -1, 'next': -1, 'total_pages': 1, 'current': 1,
+        data = {'objects': searched_data.data, 'previous': -1, 'next': -1,
+                'total_pages': 1, 'current': 1,
                 'total_objects': len(searched_data.data)}
     return data
 
@@ -169,30 +173,33 @@ def send_message(message: str, subject: str, recip: list, recip_email: list):
     recip: list
         Recipient to whom message is being sent.
     recip_email: list
-        Recipient to whom EMail is being sent. This will be deprecated once SMS feature is brought in.
+        Recipient to whom EMail is being sent. This will be deprecated once
+        SMS feature is brought in.
 
     Returns
     -------
     sent: dict
     """
-    from django.conf import settings
-    from django.core.mail import send_mail
-
     import smtplib
 
     import re
 
-    from hspsms import HSPConnector
+    from django.conf import settings
+    from django.core.mail import send_mail
+
+    from sendsms import api
 
     sent = {'success': False, 'message': None}
 
     if not getattr(settings, 'EMAIL_HOST', None):
-        raise ValueError('EMAIL_HOST must be defined in django setting for sending mail.')
+        raise ValueError('EMAIL_HOST must be defined in django '
+                         'setting for sending mail.')
     if not getattr(settings, 'EMAIL_FROM', None):
-        raise ValueError('EMAIL_FROM must be defined in django setting for sending mail. Who is sending email?')
-
-    # For sms.hspsms.com
-    hspsms = getattr(settings, 'HSPSMS', None)
+        raise ValueError('EMAIL_FROM must be defined in django setting '
+                         'for sending mail. Who is sending email?')
+    if not getattr(settings, 'EMAIL_FROM', None):
+        raise ValueError('EMAIL_FROM must be defined in django setting '
+                         'for sending mail. Who is sending email?')
 
     if isinstance(recip, str):
         # For backsupport
@@ -201,11 +208,12 @@ def send_message(message: str, subject: str, recip: list, recip_email: list):
         # For backsupport
         recip_email = [recip_email]
 
-    if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", recip[0]):
+    if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",
+                recip[0]):
         try:
             send_mail(subject=subject,
                       message=message,
-                      from_email=settings.EMAIL_FROM, recipient_list=[recip])
+                      from_email=settings.EMAIL_FROM, recipient_list=recip)
             sent['message'] = 'Message sent successfully!'
             sent['success'] = True
         except smtplib.SMTPException as ex:
@@ -213,22 +221,19 @@ def send_message(message: str, subject: str, recip: list, recip_email: list):
             sent['success'] = False
 
     else:
-        if hspsms:
-            hspsms = HSPConnector(username=hspsms['USER'], apikey=hspsms['APIKEY'], sender=hspsms.get('SENDER', None),
-                                  smstype=getattr(hspsms, 'SMSTYPE', 'TRANS'))
-            try:
-                hspsms.send_sms(recip, message)
-                sent['message'] = 'Message sent successfully!'
-                sent['success'] = True
-            except Exception as ex:
-                sent['message'] = 'Message sending Failed!' + str(ex.args)
-                sent['success'] = False
-
+        try:
+            api.send_sms(body=message, to=recip, from_phone=None)
+            sent['message'] = 'Message sent successfully!'
+            sent['success'] = True
+        except Exception as ex:
+            sent['message'] = 'Message sending Failed!' + str(ex.args)
+            sent['success'] = False
         if not sent['success']:
             try:
                 send_mail(subject=subject,
                           message=message,
-                          from_email=settings.EMAIL_FROM, recipient_list=[recip_email])
+                          from_email=settings.EMAIL_FROM,
+                          recipient_list=recip_email)
                 sent['message'] = 'Message sent successfully!'
                 sent['success'] = True
             except smtplib.SMTPException as ex:
