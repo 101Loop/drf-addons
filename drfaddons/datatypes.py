@@ -12,7 +12,8 @@ class UnixTimestampField(models.DateTimeField):
         # default for TIMESTAMP is NOT NULL unlike most fields, so we have to
         # cheat a little:
         self.isnull, self.blank = null, blank
-        self.null = True  # To prevent the framework from shoving in "not null".
+        self.null = True
+        # To prevent the framework from shoving in"not null".
         super(UnixTimestampField, self).__init__(**kwargs)
 
     def db_type(self, connection):

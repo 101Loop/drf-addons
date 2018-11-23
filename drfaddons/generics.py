@@ -1,5 +1,6 @@
 """
-Generic views that provide commonly needed behaviour for CreateUpdateModel.
+Generic views that provide commonly needed behaviour for
+CreateUpdateModel.
 """
 from __future__ import unicode_literals
 
@@ -33,7 +34,8 @@ class OwnerGenericAPIView(GenericAPIView):
 
 class GenericByUserAPIView(OwnerGenericAPIView):
     """
-    Generic view where object is retrieved via logged in user and does not requires a primary key.
+    Generic view where object is retrieved via logged in user and does
+    not requires a primary key.
     Can be used in models having One-to-One relation with User model.
     """
     lookup_field = 'created_by'

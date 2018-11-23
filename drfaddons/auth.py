@@ -178,7 +178,6 @@ def jwt_payload_handler(user):
     #     refferal_code = None
     # payload['referral'] = refferal_code
 
-
     # Include original issued at time for a brand new token,
     # to allow token refresh
 
