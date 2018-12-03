@@ -18,4 +18,4 @@ class OwnerUpdateModelMixin(UpdateModelMixin):
     """
 
     def perform_update(self, serializer):
-        serializer.save(created_by=self.request.user)
+        serializer.save()
