@@ -26,7 +26,8 @@ class CreateUpdateAdmin(admin.ModelAdmin):
         else:
             obj.created_by = request.user
             obj.create_date = datetime.datetime.now()
-        super(CreateUpdateAdmin, self).save_model(request, obj, form, change)
+        super(CreateUpdateAdmin, self).save_model(request=request, obj=obj,
+                                                  form=form, change=change)
 
 
 class CreateUpdateHiddenAdmin(CreateUpdateAdmin):
