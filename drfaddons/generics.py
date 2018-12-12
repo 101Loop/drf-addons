@@ -1,13 +1,16 @@
 """
 Generic views that provide commonly needed behaviour for
 CreateUpdateModel.
+
+Author: Himanshu Shankar (https://himanshus.com)
 """
+
 from __future__ import unicode_literals
 
 from rest_framework import mixins
 from rest_framework.generics import GenericAPIView
 
-from .mixins import OwnerCreateModelMixin, OwnerUpdateModelMixin
+from .mixins import OwnerCreateModelMixin
 
 
 class OwnerGenericAPIView(GenericAPIView):
@@ -49,8 +52,7 @@ class GenericByUserAPIView(OwnerGenericAPIView):
 # by composing the mixin classes with the base view.
 # Only for CreateUpdateModel this package
 
-class OwnerCreateAPIView(OwnerCreateModelMixin,
-                         OwnerGenericAPIView):
+class OwnerCreateAPIView(OwnerCreateModelMixin, OwnerGenericAPIView):
     """
     Concrete view for creating a CreateUpdateModel based model instance.
     """
@@ -58,8 +60,7 @@ class OwnerCreateAPIView(OwnerCreateModelMixin,
         return self.create(request, *args, **kwargs)
 
 
-class OwnerListAPIView(mixins.ListModelMixin,
-                       OwnerGenericAPIView):
+class OwnerListAPIView(mixins.ListModelMixin, OwnerGenericAPIView):
     """
     Concrete view for listing a CreateUpdateModel based queryset.
     """
@@ -67,8 +68,7 @@ class OwnerListAPIView(mixins.ListModelMixin,
         return self.list(request, *args, **kwargs)
 
 
-class OwnerRetrieveAPIView(mixins.RetrieveModelMixin,
-                           OwnerGenericAPIView):
+class OwnerRetrieveAPIView(mixins.RetrieveModelMixin, OwnerGenericAPIView):
     """
     Concrete view for retrieving a CreateUpdateModel based model instance.
     """
@@ -76,8 +76,7 @@ class OwnerRetrieveAPIView(mixins.RetrieveModelMixin,
         return self.retrieve(request, *args, **kwargs)
 
 
-class OwnerDestroyAPIView(mixins.DestroyModelMixin,
-                          OwnerGenericAPIView):
+class OwnerDestroyAPIView(mixins.DestroyModelMixin, OwnerGenericAPIView):
     """
     Concrete view for deleting a CreateUpdateModel based model instance.
     """
@@ -85,8 +84,7 @@ class OwnerDestroyAPIView(mixins.DestroyModelMixin,
         return self.destroy(request, *args, **kwargs)
 
 
-class OwnerUpdateAPIView(OwnerUpdateModelMixin,
-                         OwnerGenericAPIView):
+class OwnerUpdateAPIView(mixins.UpdateModelMixin, OwnerGenericAPIView):
     """
     Concrete view for updating a CreateUpdateModel based model instance.
     """
@@ -97,8 +95,7 @@ class OwnerUpdateAPIView(OwnerUpdateModelMixin,
         return self.partial_update(request, *args, **kwargs)
 
 
-class OwnerListCreateAPIView(mixins.ListModelMixin,
-                             OwnerCreateModelMixin,
+class OwnerListCreateAPIView(mixins.ListModelMixin, OwnerCreateModelMixin,
                              OwnerGenericAPIView):
     """
     Concrete view for listing a queryset or creating a
@@ -112,7 +109,7 @@ class OwnerListCreateAPIView(mixins.ListModelMixin,
 
 
 class OwnerRetrieveUpdateAPIView(mixins.RetrieveModelMixin,
-                                 OwnerUpdateModelMixin,
+                                 mixins.UpdateModelMixin,
                                  OwnerGenericAPIView):
     """
     Concrete view for retrieving, updating a CreateUpdateModel based
@@ -143,7 +140,7 @@ class OwnerRetrieveDestroyAPIView(mixins.RetrieveModelMixin,
 
 
 class OwnerRetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
-                                        OwnerUpdateModelMixin,
+                                        mixins.UpdateModelMixin,
                                         mixins.DestroyModelMixin,
                                         OwnerGenericAPIView):
     """
@@ -174,7 +171,7 @@ class RetrieveByUserAPIView(mixins.RetrieveModelMixin,
         return self.retrieve(request, *args, **kwargs)
 
 
-class UpdateByUserAPIView(OwnerUpdateModelMixin,
+class UpdateByUserAPIView(mixins.UpdateModelMixin,
                           GenericByUserAPIView):
     """
     Concrete view for updating a CreateUpdateModel based model instance
@@ -199,7 +196,7 @@ class DestroyByUserAPIView(mixins.DestroyModelMixin,
 
 
 class RetrieveUpdateByUserAPIView(mixins.RetrieveModelMixin,
-                                  OwnerUpdateModelMixin,
+                                  mixins.UpdateModelMixin,
                                   GenericByUserAPIView):
     """
     Concrete view for retrieving, updating a CreateUpdateModel based
@@ -232,7 +229,7 @@ class RetrieveDestroyByUserAPIView(mixins.RetrieveModelMixin,
 
 
 class RetrieveUpdateDestroyByUserAPIView(mixins.RetrieveModelMixin,
-                                         OwnerUpdateModelMixin,
+                                         mixins.UpdateModelMixin,
                                          mixins.DestroyModelMixin,
                                          GenericByUserAPIView):
     """
@@ -255,7 +252,7 @@ class RetrieveUpdateDestroyByUserAPIView(mixins.RetrieveModelMixin,
 
 class CreateRetrieveUpdateDestroyByUserAPIView(OwnerCreateModelMixin,
                                                mixins.RetrieveModelMixin,
-                                               OwnerUpdateModelMixin,
+                                               mixins.UpdateModelMixin,
                                                mixins.DestroyModelMixin,
                                                GenericByUserAPIView):
     """

@@ -1,3 +1,10 @@
+"""
+Custom abstract models that provides various functionality and can be
+inherited for further use.
+
+Author: Himanshu Shankar
+"""
+
 from django.db import models
 
 
@@ -8,7 +15,7 @@ class CreateUpdateModel(models.Model):
     update_date: Sets up the last update date of any object
     created_by: Sets up the user ID of creator with the object
 
-    Source: Himanshu Shankar (https://github.com/iamhssingh)
+    Author: Himanshu Shankar (https://himanshus.com)
     """
     from django.contrib.auth import get_user_model
     from django.utils.text import gettext_lazy as _

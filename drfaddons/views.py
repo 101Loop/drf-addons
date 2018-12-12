@@ -1,3 +1,9 @@
+"""
+Contains custom coded views.
+
+Author: Himanshu Shankar (https://himanshus.com/)
+"""
+
 from rest_framework.views import APIView
 
 

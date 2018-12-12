@@ -1,9 +1,17 @@
+"""
+Custom permissions that provides check of ownership.
+
+Author: Himanshu Shankar (https://himanshus.com)
+"""
+
 from rest_framework.permissions import IsAuthenticated
 
 
 class IsOwner(IsAuthenticated):
     """
     Implements `has_object_permission` along in IsAuthenticated
+
+    Author: Himanshu Shankar (https://himanshus.com)
     """
     def has_object_permission(self, request, view, obj):
         """

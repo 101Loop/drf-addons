@@ -1,3 +1,9 @@
+"""
+Custom filters that are used in generics API Views
+
+Author: Himanshu Shankar (https://himanshus.com)
+"""
+
 from rest_framework.filters import BaseFilterBackend
 
 

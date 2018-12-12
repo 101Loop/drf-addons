@@ -1,3 +1,10 @@
+"""
+Contains various utility functions that is commonly used.
+
+Author: Various different people from internet. Links included
+        in Source.
+"""
+
 import json
 from django.http import HttpResponse
 
@@ -95,6 +102,27 @@ def validate_email(email):
         return False
 
 
+def get_mobile_number(mobile):
+    """
+    Returns a mobile number after removing blanks
+
+    Author: Himanshu Shankar (https://himanshus.com)
+    Parameters
+    ----------
+    mobile: str
+
+    Returns
+    -------
+    str
+    """
+    blanks = [' ', '.', ',', '(', ')', '-']
+
+    for b in blanks:
+        mobile = mobile.replace(b, '')
+
+    return mobile
+
+
 def validate_mobile(mobile):
     """
     Validates a mobile number
@@ -107,6 +135,7 @@ def validate_mobile(mobile):
     -------
     bool
     """
+
     if len(mobile) >= 10:
         return True
     else:
@@ -160,7 +189,8 @@ def paginate_data(searched_data, request_data):
     return data
 
 
-def send_message(message: str, subject: str, recip: list, recip_email: list):
+def send_message(message: str, subject: str, recip: list, recip_email: list,
+                 html_message: str=None):
     """
     Sends message to specified value.
     Source: Himanshu Shankar (https://github.com/iamhssingh)
@@ -175,14 +205,15 @@ def send_message(message: str, subject: str, recip: list, recip_email: list):
     recip_email: list
         Recipient to whom EMail is being sent. This will be deprecated once
         SMS feature is brought in.
+    html_message: str
+        HTML variant of message, if any.
 
     Returns
     -------
     sent: dict
     """
-    import smtplib
 
-    import re
+    import smtplib
 
     from django.conf import settings
     from django.core.mail import send_mail
@@ -201,6 +232,26 @@ def send_message(message: str, subject: str, recip: list, recip_email: list):
         raise ValueError('EMAIL_FROM must be defined in django setting '
                          'for sending mail. Who is sending email?')
 
+    # Check if there is any recipient
+    if not len(recip) > 0:
+        raise ValueError('No recipient to send message.')
+    # Check if the value of recipient is valid (min length: a@b.c)
+    elif len(recip[0]) < 5:
+        raise ValueError('Invalid recipient.')
+
+    # Check if all recipient in list are of same type
+    is_email = validate_email(recip[0])
+    for ind in range(len(recip)):
+        if validate_email(recip[ind]) is not is_email:
+            raise ValueError('All recipient should be of same type.')
+        elif not is_email:
+            recip[ind] = get_mobile_number(recip[ind])
+
+    # Check if fallback email is indeed an email
+    for rcp in recip_email:
+        if not validate_email(rcp):
+            raise ValueError('Invalid email provided: {}'.format(rcp))
+
     if isinstance(recip, str):
         # For backsupport
         recip = [recip]
@@ -208,30 +259,27 @@ def send_message(message: str, subject: str, recip: list, recip_email: list):
         # For backsupport
         recip_email = [recip_email]
 
-    if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",
-                recip[0]):
+    if is_email:
         try:
-            send_mail(subject=subject,
-                      message=message,
+            send_mail(subject=subject, message=message,
+                      html_message=html_message,
                       from_email=settings.EMAIL_FROM, recipient_list=recip)
-            sent['message'] = 'Message sent successfully!'
-            sent['success'] = True
         except smtplib.SMTPException as ex:
             sent['message'] = 'Message sending failed!' + str(ex.args)
             sent['success'] = False
+        else:
+            sent['message'] = 'Message sent successfully!'
+            sent['success'] = True
 
     else:
         try:
             api.send_sms(body=message, to=recip, from_phone=None)
-            sent['message'] = 'Message sent successfully!'
-            sent['success'] = True
         except Exception as ex:
             sent['message'] = 'Message sending Failed!' + str(ex.args)
             sent['success'] = False
-        if not sent['success']:
             try:
                 send_mail(subject=subject,
-                          message=message,
+                          message=message, html_message=html_message,
                           from_email=settings.EMAIL_FROM,
                           recipient_list=recip_email)
                 sent['message'] = 'Message sent successfully!'
@@ -239,5 +287,8 @@ def send_message(message: str, subject: str, recip: list, recip_email: list):
             except smtplib.SMTPException as ex:
                 sent['message'] = 'Message sending Failed!' + str(ex.args)
                 sent['success'] = False
+        else:
+            sent['message'] = 'Message sent successfully!'
+            sent['success'] = True
 
     return sent

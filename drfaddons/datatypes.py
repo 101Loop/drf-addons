@@ -1,3 +1,9 @@
+"""
+Custom datatypes that are used in models.py
+
+Author: Himanshu Shankar (https://himanshus.com)
+"""
+
 from django.db import models
 
 
