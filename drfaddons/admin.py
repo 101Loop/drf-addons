@@ -39,7 +39,8 @@ class InlineCreateUpdateAdminMixin:
         # Even if created_by is in field, we only need to pick current
         # user when the field is excluded. If it's not excluded, admin
         # may want to setup created_by manually.
-        if 'created_by' in formset.form.Meta.exclude:
+        if (hasattr(formset.form.Meta.model, 'created_by')
+                and not hasattr(formset.form.base_fields, 'created_by')):
             # Perform non-commit save to get objects in formset
             formset.save(commit=False)
 
@@ -66,6 +67,8 @@ class CreateUpdateAdmin(InlineCreateUpdateAdminMixin, admin.ModelAdmin):
     """
 
     readonly_fields = ()
+
+    exclude = ()
 
     # Define ownership_info for common attributes across all models
     ownership_info = {
@@ -102,7 +105,8 @@ class CreateUpdateAdmin(InlineCreateUpdateAdminMixin, admin.ModelAdmin):
             # and field k has not been excluded
             if (hasattr(self.model, k)
                     and k not in fields
-                    and k not in self.exclude):
+                    and (not self.exclude
+                         or (self.exclude and k not in self.exclude))):
 
                 # Now, let's hide fields in add form, it will be empty
                 # Check if readonly property is not True
@@ -131,7 +135,7 @@ class CreateUpdateAdmin(InlineCreateUpdateAdminMixin, admin.ModelAdmin):
         # Loop over ownership info field
         for k, v in self.ownership_info['fields'].items():
 
-            # Check if model jas k attribute
+            # Check if model has k attribute
             # and field k is readonly
             # and k is not already in fields
             # and k is not in excluded field
@@ -139,14 +143,17 @@ class CreateUpdateAdmin(InlineCreateUpdateAdminMixin, admin.ModelAdmin):
             if (hasattr(self.model, k)
                     and ('readonly' in v and v['readonly'])
                     and k not in fields
-                    and k not in self.exclude):
+                    and (not self.exclude
+                         or (self.exclude and k not in self.exclude))):
                 fields.append(k)
         return tuple(fields)
 
     def save_model(self, request, obj, form, change):
         # Check if `created_by` has been excluded and the form is for
         # creating a new object.
-        if 'created_by' in form.Meta.exclude and not change:
+        if (hasattr(form.Meta.model, 'created_by')
+                and not hasattr(form.base_fields, 'created_by')
+                and not change):
             # Set created_by to current user
             obj.created_by = request.user
 
@@ -162,3 +169,23 @@ class CreateUpdateHiddenAdmin(HideModelAdminMixin, CreateUpdateAdmin):
     Author: Himanshu Shankar (https://himanshus.com)
     """
     pass
+
+
+class CreateUpdateReadOnlyInlineAdminMixin:
+    """
+    Mixin to set read only fields in Inline Admin based on CreateUpdate
+    Model
+
+    Author: Himanshu Shankar (https://himanshus.com)
+    """
+    readonly_fields = ('created_by', 'create_date', 'update_date')
+
+
+class CreateUpdateExcludeInlineAdminMixin:
+    """
+    Mixin to exclude ownership fields in Inline Admin based on
+    CreateUpdate Model
+
+    Author: Himanshu Shankar (https://himanshus.com)
+    """
+    exclude = ('created_by', 'create_date', 'update_date')
