@@ -190,7 +190,7 @@ def paginate_data(searched_data, request_data):
 
 
 def send_message(message: str, subject: str, recip: list, recip_email: list,
-                 html_message: str=None):
+                 html_message: str = None):
     """
     Sends message to specified value.
     Source: Himanshu Shankar (https://github.com/iamhssingh)
@@ -274,19 +274,19 @@ def send_message(message: str, subject: str, recip: list, recip_email: list,
     else:
         try:
             api.send_sms(body=message, to=recip, from_phone=None)
+
+            # Django SendSMS doesn't provide an output of success/failure.
+            # Send mail either ways, just to ensure delivery.
+            send_message(message=message, subject=subject, recip=recip_email,
+                         recip_email=recip_email,
+                         html_message=html_message)
         except Exception as ex:
             sent['message'] = 'Message sending Failed!' + str(ex.args)
             sent['success'] = False
-            try:
-                send_mail(subject=subject,
-                          message=message, html_message=html_message,
-                          from_email=settings.EMAIL_FROM,
-                          recipient_list=recip_email)
-                sent['message'] = 'Message sent successfully!'
-                sent['success'] = True
-            except smtplib.SMTPException as ex:
-                sent['message'] = 'Message sending Failed!' + str(ex.args)
-                sent['success'] = False
+            send_message(message=message, subject=subject,
+                         recip=recip_email,
+                         recip_email=recip_email,
+                         html_message=html_message)
         else:
             sent['message'] = 'Message sent successfully!'
             sent['success'] = True
