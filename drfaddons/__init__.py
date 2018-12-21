@@ -5,6 +5,6 @@ Contains a lot of additional functions & classes to ease development.
 name = "drfaddons"
 
 __title__ = 'Add Ons | Django REST Framework'
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 __author__ = '101Loop'
 __license__ = 'GPLv3'
