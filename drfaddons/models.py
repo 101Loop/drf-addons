@@ -27,5 +27,43 @@ class CreateUpdateModel(models.Model):
     created_by = models.ForeignKey(get_user_model(),
                                    on_delete=models.PROTECT)
 
+    def is_owner(self, user):
+        """
+        Checks if user is the owner of object
+
+        Parameters
+        ----------
+        user: get_user_model() instance
+
+        Returns
+        -------
+        bool
+
+        Author
+        ------
+        Himanshu Shankar (https://himanshus.com)
+        """
+        if user.is_authenticated:
+            return self.created_by.id == user.id
+        return False
+
+    def has_permission(self, user):
+        """
+        Checks if the provided user has permission on provided object
+
+        Parameters
+        ----------
+        user: get_user_model() instance
+
+        Returns
+        -------
+        bool
+
+        Author
+        ------
+        Himanshu Shankar (https://himanshus.com)
+        """
+        return self.is_owner(user)
+
     class Meta:
         abstract = True
