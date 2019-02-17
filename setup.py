@@ -7,7 +7,7 @@ setuptools.setup(
     name="drfaddons",
     version=__import__('drfaddons').__version__,
     author=__import__('drfaddons').__author__,
-    author_email="pypidev@civilmachines.com",
+    author_email="pypidev@101loop.com",
     description="A collection package for Django REST Framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
