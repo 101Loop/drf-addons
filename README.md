@@ -8,7 +8,7 @@ Wherever there isn't any source, the module has been created by me for my person
 This may come in handy to all those who are going to use `Django REST Framework` for creating `API`.<br>
 
 Contributors: **WE'RE LOOKING FOR SOMEONE WHO CAN CONTRIBUTE IN DOCS**
-- **[Civil Machines Technologies Private Limited](https://github.com/civilmahines)**: For providing me platform and
+- **[Civil Machines Technologies Private Limited](https://github.com/civilmachines)**: For providing me platform and
 funds for research work. This project is hosted currently with `CMT` only. 
 - **[Himanshu Shankar](https://github.com/iamhssingh)**: Himanshu Shankar has initiated this project and worked on this
 project to collect useful functions and classes that are being used in various projects.
