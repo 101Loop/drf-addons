@@ -6,7 +6,7 @@ chardet==3.0.4
 Django==2.1.4
 django-filter==2.0.0
 django-sendsms==0.3.1
-djangorestframework==3.9.0
+djangorestframework==3.9.1
 djangorestframework-jwt==1.11.0
 docutils==0.14
 idna==2.8
