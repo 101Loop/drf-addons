@@ -43,7 +43,7 @@ class JSONWebTokenAuthenticationQS(BaseJSONWebTokenAuthentication):
 
             Hide some test client ickyness where the header can be unicode.
         """
-        from django.utils.six import text_type
+        from six import text_type
         from rest_framework import HTTP_HEADER_ENCODING
 
         auth = request.data.get(self.key, b'') or request.META.get(
