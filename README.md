@@ -1,3 +1,4 @@
+![PyPI - Downloads](https://img.shields.io/pypi/dm/drfaddons)
 # Django REST Framework Add Ons
 
 **A collection package for Django REST Framework**<br>
