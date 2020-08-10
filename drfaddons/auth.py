@@ -45,9 +45,8 @@ class JSONWebTokenAuthenticationQS(BaseJSONWebTokenAuthentication):
         """
         from six import text_type
         from rest_framework import HTTP_HEADER_ENCODING
-
-        auth = request.data.get(self.key, b'') or request.META.get(
-            self.header_key, b'')
+        
+        auth = request.META.get(self.header_key, b'')
 
         if isinstance(auth, text_type):
             # Work around django test client oddness
