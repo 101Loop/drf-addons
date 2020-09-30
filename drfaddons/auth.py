@@ -1,5 +1,5 @@
-from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 from rest_framework.authentication import SessionAuthentication
+from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 
 
 class JSONWebTokenAuthenticationQS(BaseJSONWebTokenAuthentication):
@@ -16,11 +16,12 @@ class JSONWebTokenAuthenticationQS(BaseJSONWebTokenAuthentication):
 
     Source: Himanshu Shankar (https://github.com/iamhssingh)
     """
+
     from rest_framework_jwt.settings import api_settings
     from django.conf import settings
 
-    key = getattr(settings, 'JWT_AUTH_KEY', 'Authorization')
-    header_key = 'HTTP_' + key.upper()
+    key = getattr(settings, "JWT_AUTH_KEY", "Authorization")
+    header_key = "HTTP_" + key.upper()
     prefix = api_settings.JWT_AUTH_HEADER_PREFIX
     cookie = api_settings.JWT_AUTH_COOKIE
 
@@ -45,8 +46,8 @@ class JSONWebTokenAuthenticationQS(BaseJSONWebTokenAuthentication):
         """
         from six import text_type
         from rest_framework import HTTP_HEADER_ENCODING
-        
-        auth = request.META.get(self.header_key, b'')
+
+        auth = request.META.get(self.header_key, b"")
 
         if isinstance(auth, text_type):
             # Work around django test client oddness
@@ -72,7 +73,7 @@ class JSONWebTokenAuthenticationQS(BaseJSONWebTokenAuthentication):
         from rest_framework import exceptions
 
         auth = self.get_authorization(request).split()
-        auth_header_prefix = self.prefix.lower() or ''
+        auth_header_prefix = self.prefix.lower() or ""
 
         if not auth:
             if self.cookie:
@@ -80,19 +81,21 @@ class JSONWebTokenAuthenticationQS(BaseJSONWebTokenAuthentication):
             return None
 
         if auth_header_prefix is None or len(auth_header_prefix) < 1:
-            auth.append('')
+            auth.append("")
             auth.reverse()
 
         if smart_text(auth[0].lower()) != auth_header_prefix:
             return None
 
         if len(auth) == 1:
-            msg = _('Invalid Authorization header. No credentials provided.')
+            msg = _("Invalid Authorization header. No credentials provided.")
             raise exceptions.AuthenticationFailed(msg)
 
         elif len(auth) > 2:
-            msg = _('Invalid Authorization header. Credentials string '
-                    'should not contain spaces.')
+            msg = _(
+                "Invalid Authorization header. Credentials string "
+                "should not contain spaces."
+            )
             raise exceptions.AuthenticationFailed(msg)
 
         return auth[1]

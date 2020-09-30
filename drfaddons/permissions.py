@@ -3,7 +3,6 @@ Custom permissions that provides check of ownership.
 
 Author: Himanshu Shankar (https://himanshus.com)
 """
-
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -14,6 +13,7 @@ class IsOwner(IsAuthenticated):
 
     Author: Himanshu Shankar (https://himanshus.com)
     """
+
     def has_object_permission(self, request, view, obj):
         """
         Checks if `request.user` is the owner of `obj`
@@ -41,6 +41,7 @@ class IsAuthenticatedWithPermission(IsAuthenticated):
 
     Author: Himanshu Shankar (https://himanshus.com)
     """
+
     def has_object_permission(self, request, view, obj):
         """
         Checks if `request.user` has permission via
@@ -74,9 +75,6 @@ class IAWPOrSuperuser(IsAuthenticatedWithPermission):
         -------
 
         """
-        return (
-            request.user.is_superuser or
-            super(IAWPOrSuperuser, self).has_object_permission(
-                request=request, view=view, obj=obj
-            )
-        )
+        return request.user.is_superuser or super(
+            IAWPOrSuperuser, self
+        ).has_object_permission(request=request, view=view, obj=obj)

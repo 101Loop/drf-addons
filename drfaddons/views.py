@@ -3,7 +3,6 @@ Contains custom coded views.
 
 Author: Himanshu Shankar (https://himanshus.com/)
 """
-
 from rest_framework.views import APIView
 
 
@@ -17,12 +16,13 @@ class ValidateAndPerformView(APIView):
 
     Source: Himanshu Shankar (https://github.com/iamhssingh)
     """
+
     from django.views.decorators.csrf import csrf_exempt
     from rest_framework.permissions import AllowAny
     from rest_framework.renderers import JSONRenderer
 
-    renderer_classes = (JSONRenderer, )
-    permission_classes = (AllowAny, )
+    renderer_classes = (JSONRenderer,)
+    permission_classes = (AllowAny,)
     serializer_class = None
     show_serializer = None
     model = None
@@ -52,8 +52,7 @@ class ValidateAndPerformView(APIView):
             been performed.
 
         """
-        raise NotImplementedError('The abstract method needs to be implemented'
-                                  )
+        raise NotImplementedError("The abstract method needs to be implemented")
 
     @csrf_exempt
     def post(self, request):
@@ -65,8 +64,9 @@ class ValidateAndPerformView(APIView):
             data, status_code = self.validated(serialized_data=serialized_data)
             return JsonResponse(data, status=status_code)
         else:
-            return JsonResponse(serialized_data.errors,
-                                status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+            return JsonResponse(
+                serialized_data.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY
+            )
 
     class Meta:
         abstract = True
@@ -81,6 +81,7 @@ class AddObjectView(ValidateAndPerformView):
 
     Source: Himanshu Shankar (https://github.com/iamhssingh)
     """
+
     from django.views.decorators.csrf import csrf_exempt
     from rest_framework.permissions import IsAuthenticated
 
@@ -89,8 +90,9 @@ class AddObjectView(ValidateAndPerformView):
     def validated(self, serialized_data, *args, **kwargs):
         from rest_framework import status
 
-        serialized_data = self.show_serializer(serialized_data.save(
-            created_by=self.request.user))
+        serialized_data = self.show_serializer(
+            serialized_data.save(created_by=self.request.user)
+        )
         return serialized_data.data, status.HTTP_201_CREATED
 
     @csrf_exempt
@@ -98,12 +100,13 @@ class AddObjectView(ValidateAndPerformView):
         from .utils import JsonResponse
         from rest_framework import status
 
-        if 'id' in request.data.keys():
+        if "id" in request.data.keys():
             try:
-                serialized_data = self.serializer_class(self.model.objects.get(
-                    pk=request.data['id']), data=request.data)
+                serialized_data = self.serializer_class(
+                    self.model.objects.get(pk=request.data["id"]), data=request.data
+                )
             except self.model.DoesNotExist:
-                data = {'id': ["Object with provided ID does not exists"]}
+                data = {"id": ["Object with provided ID does not exists"]}
                 return JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
         else:
             serialized_data = self.serializer_class(data=request.data)
@@ -111,8 +114,9 @@ class AddObjectView(ValidateAndPerformView):
             data, status_code = self.validated(serialized_data=serialized_data)
             return JsonResponse(data, status=status_code)
         else:
-            return JsonResponse(serialized_data.errors,
-                                status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+            return JsonResponse(
+                serialized_data.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY
+            )
 
     class Meta:
         abstract = True
@@ -127,12 +131,13 @@ class PaginatedSearchView(ValidateAndPerformView):
 
     Source: Himanshu Shankar (https://github.com/iamhssingh)
     """
+
     from rest_framework.permissions import IsAuthenticated
 
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def fetch_data(self, serialized_data):
-        raise NotImplementedError('Implement Fetch Data')
+        raise NotImplementedError("Implement Fetch Data")
 
     def validated(self, serialized_data, *args, **kwargs):
         from .utils import paginate_data
@@ -140,10 +145,14 @@ class PaginatedSearchView(ValidateAndPerformView):
 
         searched_data = self.show_serializer(
             self.fetch_data(serialized_data).order_by(
-                serialized_data.data['order_by'][0]), many=True)
-        return (paginate_data(searched_data=searched_data,
-                              request_data=serialized_data),
-                status.HTTP_202_ACCEPTED)
+                serialized_data.data["order_by"][0]
+            ),
+            many=True,
+        )
+        return (
+            paginate_data(searched_data=searched_data, request_data=serialized_data),
+            status.HTTP_202_ACCEPTED,
+        )
 
     class Meta:
         abstract = True

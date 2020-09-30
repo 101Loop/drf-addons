@@ -4,7 +4,6 @@ inherited for further use.
 
 Author: Himanshu Shankar
 """
-
 from django.db import models
 
 
@@ -17,15 +16,13 @@ class CreateUpdateModel(models.Model):
 
     Author: Himanshu Shankar (https://himanshus.com)
     """
+
     from django.contrib.auth import get_user_model
     from django.utils.text import gettext_lazy as _
 
-    create_date = models.DateTimeField(_('Create Date/Time'),
-                                       auto_now_add=True)
-    update_date = models.DateTimeField(_('Date/Time Modified'),
-                                       auto_now=True)
-    created_by = models.ForeignKey(get_user_model(),
-                                   on_delete=models.PROTECT)
+    create_date = models.DateTimeField(_("Create Date/Time"), auto_now_add=True)
+    update_date = models.DateTimeField(_("Date/Time Modified"), auto_now=True)
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
 
     def is_owner(self, user):
         """

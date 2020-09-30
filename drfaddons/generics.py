@@ -4,7 +4,6 @@ CreateUpdateModel.
 
 Author: Himanshu Shankar (https://himanshus.com)
 """
-
 from __future__ import unicode_literals
 
 from rest_framework import mixins
@@ -19,6 +18,7 @@ class OwnerGenericAPIView(GenericAPIView):
     Only allows Authenticated User
     Uses JSONParser & JSONRenderer
     """
+
     from .filters import IsOwnerFilterBackend
     from .permissions import IsOwner
 
@@ -30,9 +30,9 @@ class OwnerGenericAPIView(GenericAPIView):
     # The filter backend classes to use for queryset filtering
     filter_backends = (IsOwnerFilterBackend, DjangoFilterBackend)
 
-    permission_classes = (IsOwner, )
-    renderer_classes = (JSONRenderer, )
-    parser_classes = (JSONParser, )
+    permission_classes = (IsOwner,)
+    renderer_classes = (JSONRenderer,)
+    parser_classes = (JSONParser,)
 
 
 class GenericByUserAPIView(OwnerGenericAPIView):
@@ -41,9 +41,11 @@ class GenericByUserAPIView(OwnerGenericAPIView):
     not requires a primary key.
     Can be used in models having One-to-One relation with User model.
     """
-    lookup_field = 'created_by'
+
+    lookup_field = "created_by"
 
     def get_object(self):
+        """Returns the object the view is displaying"""
         self.kwargs[self.lookup_field] = self.request.user
         return super(GenericByUserAPIView, self).get_object()
 
@@ -52,11 +54,14 @@ class GenericByUserAPIView(OwnerGenericAPIView):
 # by composing the mixin classes with the base view.
 # Only for CreateUpdateModel this package
 
+
 class OwnerCreateAPIView(OwnerCreateModelMixin, OwnerGenericAPIView):
     """
     Concrete view for creating a CreateUpdateModel based model instance.
     """
+
     def post(self, request, *args, **kwargs):
+        """"""
         return self.create(request, *args, **kwargs)
 
 
@@ -64,6 +69,7 @@ class OwnerListAPIView(mixins.ListModelMixin, OwnerGenericAPIView):
     """
     Concrete view for listing a CreateUpdateModel based queryset.
     """
+
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
@@ -72,6 +78,7 @@ class OwnerRetrieveAPIView(mixins.RetrieveModelMixin, OwnerGenericAPIView):
     """
     Concrete view for retrieving a CreateUpdateModel based model instance.
     """
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
@@ -80,6 +87,7 @@ class OwnerDestroyAPIView(mixins.DestroyModelMixin, OwnerGenericAPIView):
     """
     Concrete view for deleting a CreateUpdateModel based model instance.
     """
+
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
@@ -88,6 +96,7 @@ class OwnerUpdateAPIView(mixins.UpdateModelMixin, OwnerGenericAPIView):
     """
     Concrete view for updating a CreateUpdateModel based model instance.
     """
+
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
@@ -95,12 +104,14 @@ class OwnerUpdateAPIView(mixins.UpdateModelMixin, OwnerGenericAPIView):
         return self.partial_update(request, *args, **kwargs)
 
 
-class OwnerListCreateAPIView(mixins.ListModelMixin, OwnerCreateModelMixin,
-                             OwnerGenericAPIView):
+class OwnerListCreateAPIView(
+    mixins.ListModelMixin, OwnerCreateModelMixin, OwnerGenericAPIView
+):
     """
     Concrete view for listing a queryset or creating a
     CreateUpdateModel based model instance.
     """
+
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
@@ -108,13 +119,14 @@ class OwnerListCreateAPIView(mixins.ListModelMixin, OwnerCreateModelMixin,
         return self.create(request, *args, **kwargs)
 
 
-class OwnerRetrieveUpdateAPIView(mixins.RetrieveModelMixin,
-                                 mixins.UpdateModelMixin,
-                                 OwnerGenericAPIView):
+class OwnerRetrieveUpdateAPIView(
+    mixins.RetrieveModelMixin, mixins.UpdateModelMixin, OwnerGenericAPIView
+):
     """
     Concrete view for retrieving, updating a CreateUpdateModel based
     model instance.
     """
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
@@ -125,13 +137,14 @@ class OwnerRetrieveUpdateAPIView(mixins.RetrieveModelMixin,
         return self.partial_update(request, *args, **kwargs)
 
 
-class OwnerRetrieveDestroyAPIView(mixins.RetrieveModelMixin,
-                                  mixins.DestroyModelMixin,
-                                  OwnerGenericAPIView):
+class OwnerRetrieveDestroyAPIView(
+    mixins.RetrieveModelMixin, mixins.DestroyModelMixin, OwnerGenericAPIView
+):
     """
     Concrete view for retrieving or deleting a CreateUpdateModel based
     model instance.
     """
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
@@ -139,14 +152,17 @@ class OwnerRetrieveDestroyAPIView(mixins.RetrieveModelMixin,
         return self.destroy(request, *args, **kwargs)
 
 
-class OwnerRetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
-                                        mixins.UpdateModelMixin,
-                                        mixins.DestroyModelMixin,
-                                        OwnerGenericAPIView):
+class OwnerRetrieveUpdateDestroyAPIView(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    OwnerGenericAPIView,
+):
     """
     Concrete view for retrieving, updating or deleting a
     CreateUpdateModel based model instance.
     """
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
@@ -160,24 +176,24 @@ class OwnerRetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
         return self.destroy(request, *args, **kwargs)
 
 
-class RetrieveByUserAPIView(mixins.RetrieveModelMixin,
-                            GenericByUserAPIView):
+class RetrieveByUserAPIView(mixins.RetrieveModelMixin, GenericByUserAPIView):
     """
     Concrete view for retrieving a CreateUpdateModel based model
     instance where One-to-One relationship exists on created_by with
     User.
     """
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
 
-class UpdateByUserAPIView(mixins.UpdateModelMixin,
-                          GenericByUserAPIView):
+class UpdateByUserAPIView(mixins.UpdateModelMixin, GenericByUserAPIView):
     """
     Concrete view for updating a CreateUpdateModel based model instance
     where One-to-One relationship exists on
     created_by with User.
     """
+
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
@@ -185,24 +201,25 @@ class UpdateByUserAPIView(mixins.UpdateModelMixin,
         return self.partial_update(request, *args, **kwargs)
 
 
-class DestroyByUserAPIView(mixins.DestroyModelMixin,
-                           GenericByUserAPIView):
+class DestroyByUserAPIView(mixins.DestroyModelMixin, GenericByUserAPIView):
     """
     Concrete view for deleting a CreateUpdateModel based model instance
     where One-to-One relationship exists on created_by with User.
     """
+
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
 
-class RetrieveUpdateByUserAPIView(mixins.RetrieveModelMixin,
-                                  mixins.UpdateModelMixin,
-                                  GenericByUserAPIView):
+class RetrieveUpdateByUserAPIView(
+    mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericByUserAPIView
+):
     """
     Concrete view for retrieving, updating a CreateUpdateModel based
     model instance where One-to-One relationship exists on created_by
     with User.
     """
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
@@ -213,14 +230,15 @@ class RetrieveUpdateByUserAPIView(mixins.RetrieveModelMixin,
         return self.partial_update(request, *args, **kwargs)
 
 
-class RetrieveDestroyByUserAPIView(mixins.RetrieveModelMixin,
-                                   mixins.DestroyModelMixin,
-                                   GenericByUserAPIView):
+class RetrieveDestroyByUserAPIView(
+    mixins.RetrieveModelMixin, mixins.DestroyModelMixin, GenericByUserAPIView
+):
     """
     Concrete view for retrieving or deleting a CreateUpdateModel based
     model instance where One-to-One relationship exists on created_by
     with User.
     """
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
@@ -228,15 +246,18 @@ class RetrieveDestroyByUserAPIView(mixins.RetrieveModelMixin,
         return self.destroy(request, *args, **kwargs)
 
 
-class RetrieveUpdateDestroyByUserAPIView(mixins.RetrieveModelMixin,
-                                         mixins.UpdateModelMixin,
-                                         mixins.DestroyModelMixin,
-                                         GenericByUserAPIView):
+class RetrieveUpdateDestroyByUserAPIView(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    GenericByUserAPIView,
+):
     """
     Concrete view for retrieving, updating or deleting a
     CreateUpdateModel based model instance where One-to-One
     relationship exists on created_by with User.
     """
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
@@ -250,16 +271,19 @@ class RetrieveUpdateDestroyByUserAPIView(mixins.RetrieveModelMixin,
         return self.destroy(request, *args, **kwargs)
 
 
-class CreateRetrieveUpdateDestroyByUserAPIView(OwnerCreateModelMixin,
-                                               mixins.RetrieveModelMixin,
-                                               mixins.UpdateModelMixin,
-                                               mixins.DestroyModelMixin,
-                                               GenericByUserAPIView):
+class CreateRetrieveUpdateDestroyByUserAPIView(
+    OwnerCreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    GenericByUserAPIView,
+):
     """
     Concrete view for adding, retrieving, updating or deleting a
     CreateUpdateModel based model instance where One-to-One
     relationship exists on created_by with User.
     """
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 

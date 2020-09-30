@@ -3,7 +3,6 @@ Custom filters that are used in generics API Views
 
 Author: Himanshu Shankar (https://himanshus.com)
 """
-
 from rest_framework.filters import BaseFilterBackend
 
 
@@ -23,6 +22,7 @@ class IsOwnerOrSuperuser(IsOwnerFilterBackend):
 
     Author: Himanshu Shankar (https://himanshus.com)
     """
+
     def filter_queryset(self, request, queryset, view):
         if not request.user.is_superuser:
             return super(IsOwnerOrSuperuser, self).filter_queryset(
