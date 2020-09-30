@@ -4,8 +4,8 @@ Contains various utility functions that is commonly used.
 Author: Various different people from internet. Links included
         in Source.
 """
-
 import json
+
 from django.http import HttpResponse
 
 
@@ -15,11 +15,12 @@ class DateTimeEncoder(json.JSONEncoder):
     Sources: [https://gist.github.com/dannvix/29f53570dfde13f29c35,
     https://www.snip2code.com/Snippet/106599/]
     """
+
     def default(self, obj):
         from datetime import datetime
 
         if isinstance(obj, datetime):
-            encoded_object = obj.strftime('%s')
+            encoded_object = obj.strftime("%s")
         else:
             encoded_object = super(self, obj)
         return encoded_object
@@ -32,15 +33,15 @@ class JsonResponse(HttpResponse):
     Sources: [https://gist.github.com/dannvix/29f53570dfde13f29c35,
     https://www.snip2code.com/Snippet/106599/]
     """
-    def __init__(self, content, status=None, content_type='application/json'):
+
+    def __init__(self, content, status=None, content_type="application/json"):
         data = dict()
-        data['data'] = content
-        data['status_code'] = status
+        data["data"] = content
+        data["status_code"] = status
         json_text = json.dumps(data, default=json_serial)
         super(JsonResponse, self).__init__(
-            content=json_text,
-            status=status,
-            content_type=content_type)
+            content=json_text, status=status, content_type=content_type
+        )
 
 
 def json_serial(obj):
@@ -73,11 +74,11 @@ def get_client_ip(request):
     -------
     ip: str
     """
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
     if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
+        ip = x_forwarded_for.split(",")[0]
     else:
-        ip = request.META.get('REMOTE_ADDR')
+        ip = request.META.get("REMOTE_ADDR")
     return ip
 
 
@@ -95,6 +96,7 @@ def validate_email(email):
     """
     from django.core.validators import validate_email
     from django.core.exceptions import ValidationError
+
     try:
         validate_email(email)
         return True
@@ -115,10 +117,10 @@ def get_mobile_number(mobile):
     -------
     str
     """
-    blanks = [' ', '.', ',', '(', ')', '-']
+    blanks = [" ", ".", ",", "(", ")", "-"]
 
     for b in blanks:
-        mobile = mobile.replace(b, '')
+        mobile = mobile.replace(b, "")
 
     return mobile
 
@@ -160,37 +162,45 @@ def paginate_data(searched_data, request_data):
     """
     from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-    if int(request_data.data['paginator']) > 0:
-        paginator = Paginator(searched_data.data,
-                              request_data.data['paginator'])
+    if int(request_data.data["paginator"]) > 0:
+        paginator = Paginator(searched_data.data, request_data.data["paginator"])
         try:
-            curr = paginator.page(request_data.data['page'])
+            curr = paginator.page(request_data.data["page"])
         except PageNotAnInteger:
             curr = paginator.page(1)
         except EmptyPage:
             curr = paginator.page(paginator.num_pages)
 
-        data = {'total_pages': paginator.num_pages, 'current': curr.number,
-                'total_objects': len(searched_data.data)}
+        data = {
+            "total_pages": paginator.num_pages,
+            "current": curr.number,
+            "total_objects": len(searched_data.data),
+        }
         if curr.has_next():
-            data['next'] = curr.next_page_number()
+            data["next"] = curr.next_page_number()
         else:
-            data['next'] = -1
+            data["next"] = -1
 
         if curr.number > 1:
-            data['previous'] = curr.previous_page_number()
+            data["previous"] = curr.previous_page_number()
         else:
-            data['previous'] = -1
-        data['objects'] = curr.object_list
+            data["previous"] = -1
+        data["objects"] = curr.object_list
     else:
-        data = {'objects': searched_data.data, 'previous': -1, 'next': -1,
-                'total_pages': 1, 'current': 1,
-                'total_objects': len(searched_data.data)}
+        data = {
+            "objects": searched_data.data,
+            "previous": -1,
+            "next": -1,
+            "total_pages": 1,
+            "current": 1,
+            "total_objects": len(searched_data.data),
+        }
     return data
 
 
-def send_message(message: str, subject: str, recip: list, recip_email: list,
-                 html_message: str = None):
+def send_message(
+    message: str, subject: str, recip: list, recip_email: list, html_message: str = None
+):
     """
     Sends message to specified value.
     Source: Himanshu Shankar (https://github.com/iamhssingh)
@@ -220,37 +230,42 @@ def send_message(message: str, subject: str, recip: list, recip_email: list,
 
     from sendsms import api
 
-    sent = {'success': False, 'message': None}
+    sent = {"success": False, "message": None}
 
-    if not getattr(settings, 'EMAIL_HOST', None):
-        raise ValueError('EMAIL_HOST must be defined in django '
-                         'setting for sending mail.')
-    if not getattr(settings, 'EMAIL_FROM', None):
-        raise ValueError('EMAIL_FROM must be defined in django setting '
-                         'for sending mail. Who is sending email?')
-    if not getattr(settings, 'EMAIL_FROM', None):
-        raise ValueError('EMAIL_FROM must be defined in django setting '
-                         'for sending mail. Who is sending email?')
+    if not getattr(settings, "EMAIL_HOST", None):
+        raise ValueError(
+            "EMAIL_HOST must be defined in django " "setting for sending mail."
+        )
+    if not getattr(settings, "EMAIL_FROM", None):
+        raise ValueError(
+            "EMAIL_FROM must be defined in django setting "
+            "for sending mail. Who is sending email?"
+        )
+    if not getattr(settings, "EMAIL_FROM", None):
+        raise ValueError(
+            "EMAIL_FROM must be defined in django setting "
+            "for sending mail. Who is sending email?"
+        )
 
     # Check if there is any recipient
     if not len(recip) > 0:
-        raise ValueError('No recipient to send message.')
+        raise ValueError("No recipient to send message.")
     # Check if the value of recipient is valid (min length: a@b.c)
     elif len(recip[0]) < 5:
-        raise ValueError('Invalid recipient.')
+        raise ValueError("Invalid recipient.")
 
     # Check if all recipient in list are of same type
     is_email = validate_email(recip[0])
     for ind in range(len(recip)):
         if validate_email(recip[ind]) is not is_email:
-            raise ValueError('All recipient should be of same type.')
+            raise ValueError("All recipient should be of same type.")
         elif not is_email:
             recip[ind] = get_mobile_number(recip[ind])
 
     # Check if fallback email is indeed an email
     for rcp in recip_email:
         if not validate_email(rcp):
-            raise ValueError('Invalid email provided: {}'.format(rcp))
+            raise ValueError("Invalid email provided: {}".format(rcp))
 
     if isinstance(recip, str):
         # For backsupport
@@ -261,15 +276,19 @@ def send_message(message: str, subject: str, recip: list, recip_email: list,
 
     if is_email:
         try:
-            send_mail(subject=subject, message=message,
-                      html_message=html_message,
-                      from_email=settings.EMAIL_FROM, recipient_list=recip)
+            send_mail(
+                subject=subject,
+                message=message,
+                html_message=html_message,
+                from_email=settings.EMAIL_FROM,
+                recipient_list=recip,
+            )
         except smtplib.SMTPException as ex:
-            sent['message'] = 'Message sending failed!' + str(ex.args)
-            sent['success'] = False
+            sent["message"] = "Message sending failed!" + str(ex.args)
+            sent["success"] = False
         else:
-            sent['message'] = 'Message sent successfully!'
-            sent['success'] = True
+            sent["message"] = "Message sent successfully!"
+            sent["success"] = True
 
     else:
         try:
@@ -277,18 +296,25 @@ def send_message(message: str, subject: str, recip: list, recip_email: list,
 
             # Django SendSMS doesn't provide an output of success/failure.
             # Send mail either ways, just to ensure delivery.
-            send_message(message=message, subject=subject, recip=recip_email,
-                         recip_email=recip_email,
-                         html_message=html_message)
+            send_message(
+                message=message,
+                subject=subject,
+                recip=recip_email,
+                recip_email=recip_email,
+                html_message=html_message,
+            )
         except Exception as ex:
-            sent['message'] = 'Message sending Failed!' + str(ex.args)
-            sent['success'] = False
-            send_message(message=message, subject=subject,
-                         recip=recip_email,
-                         recip_email=recip_email,
-                         html_message=html_message)
+            sent["message"] = "Message sending Failed!" + str(ex.args)
+            sent["success"] = False
+            send_message(
+                message=message,
+                subject=subject,
+                recip=recip_email,
+                recip_email=recip_email,
+                html_message=html_message,
+            )
         else:
-            sent['message'] = 'Message sent successfully!'
-            sent['success'] = True
+            sent["message"] = "Message sent successfully!"
+            sent["success"] = True
 
     return sent

@@ -1,14 +1,21 @@
 version = 1
 
 test_patterns = [
-  
+  "tests/**",
+  "test_*.py"
 ]
 
 exclude_patterns = [
-  
+  "migrations/**",
+  "**/examples/**"
 ]
 
 [[analyzers]]
-name = 'python'
+name = "python"
 enabled = true
-runtime_version = '3.x.x'
+dependency_file_paths = ["dev_requirements.txt"]
+
+  [analyzers.meta]
+  runtime_version = "3.x.x"
+  type_checker = "mypy"
+  max_line_length = 88

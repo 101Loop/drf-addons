@@ -11,7 +11,6 @@ InlineCreateUpdateAdminMixin: Takes care of inline formset where model
 
 Author: Himanshu Shankar (https://himanshus.com)
 """
-
 from django.contrib import admin
 
 
@@ -39,21 +38,21 @@ class InlineCreateUpdateAdminMixin:
         # Even if created_by is in field, we only need to pick current
         # user when the field is excluded. If it's not excluded, admin
         # may want to setup created_by manually.
-        if (hasattr(formset.form.Meta.model, 'created_by')
-                and not hasattr(formset.form.base_fields, 'created_by')):
+        if hasattr(formset.form.Meta.model, "created_by") and not hasattr(
+            formset.form.base_fields, "created_by"
+        ):
             # Perform non-commit save to get objects in formset
             formset.save(commit=False)
 
             # Check if any new object is being created
-            if hasattr(formset, 'new_objects'):
+            if hasattr(formset, "new_objects"):
                 for new_object in formset.new_objects:
                     new_object.created_by = request.user
 
         # Finally, call super function to save object.
-        super(InlineCreateUpdateAdminMixin, self).save_formset(request=request,
-                                                               form=form,
-                                                               formset=formset,
-                                                               change=change)
+        super(InlineCreateUpdateAdminMixin, self).save_formset(
+            request=request, form=form, formset=formset, change=change
+        )
 
 
 class CreateUpdateAdmin(InlineCreateUpdateAdminMixin, admin.ModelAdmin):
@@ -72,12 +71,12 @@ class CreateUpdateAdmin(InlineCreateUpdateAdminMixin, admin.ModelAdmin):
 
     # Define ownership_info for common attributes across all models
     ownership_info = {
-        'label': 'Ownership Info',
-        'fields': {
-            'created_by': {'readonly': True},
-            'create_date': {'readonly': True},
-            'update_date': {'readonly': True}
-        }
+        "label": "Ownership Info",
+        "fields": {
+            "created_by": {"readonly": True},
+            "create_date": {"readonly": True},
+            "update_date": {"readonly": True},
+        },
     }
 
     def get_fieldsets(self, request, obj=None):
@@ -86,8 +85,9 @@ class CreateUpdateAdmin(InlineCreateUpdateAdminMixin, admin.ModelAdmin):
 
         Author: Himanshu Shankar (https://himanshus.com)
         """
-        fieldsets = list(super(CreateUpdateAdmin, self).get_fieldsets(
-            request=request, obj=obj))
+        fieldsets = list(
+            super(CreateUpdateAdmin, self).get_fieldsets(request=request, obj=obj)
+        )
 
         # Create sets for future use
         fields = set()
@@ -95,29 +95,29 @@ class CreateUpdateAdmin(InlineCreateUpdateAdminMixin, admin.ModelAdmin):
 
         # Prepare a set of existing fields in fieldset
         for fs in fieldsets:
-            fields = fields.union(fs[1]['fields'])
+            fields = fields.union(fs[1]["fields"])
 
         # Loop over ownership info fields
-        for k, v in self.ownership_info['fields'].items():
+        for k, v in self.ownership_info["fields"].items():
 
             # Check if current model has k attribute
             # and field k is not already in fieldset
             # and field k has not been excluded
-            if (hasattr(self.model, k)
-                    and k not in fields
-                    and (not self.exclude
-                         or (self.exclude and k not in self.exclude))):
+            if (
+                hasattr(self.model, k)
+                and k not in fields
+                and (not self.exclude or (self.exclude and k not in self.exclude))
+            ):
 
                 # Now, let's hide fields in add form, it will be empty
                 # Check if readonly property is not True
                 # or this is an edit form
-                if ('readonly' in v and not v['readonly']) or obj:
+                if ("readonly" in v and not v["readonly"]) or obj:
                     to_add.add(k)
 
         # If to_add set is not empty, add ownership info to fieldset
         if len(to_add) > 0:
-            fieldsets.append((self.ownership_info['label'],
-                              {'fields': tuple(to_add)}))
+            fieldsets.append((self.ownership_info["label"], {"fields": tuple(to_add)}))
         return tuple(fieldsets)
 
     def get_readonly_fields(self, request, obj=None):
@@ -129,37 +129,45 @@ class CreateUpdateAdmin(InlineCreateUpdateAdminMixin, admin.ModelAdmin):
         """
 
         # Get read only fields from super
-        fields = list(super(CreateUpdateAdmin, self).get_readonly_fields(
-            request=request, obj=obj))
+        fields = list(
+            super(CreateUpdateAdmin, self).get_readonly_fields(request=request, obj=obj)
+        )
 
         # Loop over ownership info field
-        for k, v in self.ownership_info['fields'].items():
+        for k, v in self.ownership_info["fields"].items():
 
             # Check if model has k attribute
             # and field k is readonly
             # and k is not already in fields
             # and k is not in excluded field
             # (if not checked, form.Meta.exclude has same field twice)
-            if (hasattr(self.model, k)
-                    and ('readonly' in v and v['readonly'])
-                    and k not in fields
-                    and (not self.exclude
-                         or (self.exclude and k not in self.exclude))):
+            if (
+                hasattr(self.model, k)
+                and ("readonly" in v and v["readonly"])
+                and k not in fields
+                and (not self.exclude or (self.exclude and k not in self.exclude))
+            ):
                 fields.append(k)
         return tuple(fields)
 
     def save_model(self, request, obj, form, change):
+        """
+        Given a model instance save it to the database.
+        """
         # Check if `created_by` has been excluded and the form is for
         # creating a new object.
-        if (hasattr(form.Meta.model, 'created_by')
-                and not hasattr(form.base_fields, 'created_by')
-                and not change):
+        if (
+            hasattr(form.Meta.model, "created_by")
+            and not hasattr(form.base_fields, "created_by")
+            and not change
+        ):
             # Set created_by to current user
             obj.created_by = request.user
 
         # Finally, call super
-        super(CreateUpdateAdmin, self).save_model(request=request, obj=obj,
-                                                  form=form, change=change)
+        super(CreateUpdateAdmin, self).save_model(
+            request=request, obj=obj, form=form, change=change
+        )
 
 
 class CreateUpdateHiddenAdmin(HideModelAdminMixin, CreateUpdateAdmin):
@@ -168,6 +176,7 @@ class CreateUpdateHiddenAdmin(HideModelAdminMixin, CreateUpdateAdmin):
 
     Author: Himanshu Shankar (https://himanshus.com)
     """
+
     pass
 
 
@@ -178,7 +187,8 @@ class CreateUpdateReadOnlyInlineAdminMixin:
 
     Author: Himanshu Shankar (https://himanshus.com)
     """
-    readonly_fields = ('created_by', 'create_date', 'update_date')
+
+    readonly_fields = ("created_by", "create_date", "update_date")
 
 
 class CreateUpdateExcludeInlineAdminMixin:
@@ -188,4 +198,5 @@ class CreateUpdateExcludeInlineAdminMixin:
 
     Author: Himanshu Shankar (https://himanshus.com)
     """
-    exclude = ('created_by', 'create_date', 'update_date')
+
+    exclude = ("created_by", "create_date", "update_date")
