@@ -136,10 +136,7 @@ def validate_mobile(mobile):
     bool
     """
 
-    if len(mobile) >= 10:
-        return True
-    else:
-        return False
+    return len(mobile) == 10
 
 
 def paginate_data(searched_data, request_data):
