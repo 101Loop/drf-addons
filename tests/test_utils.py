@@ -5,14 +5,14 @@ from drfaddons.utils import validate_mobile
 
 
 class TestUtils(TestCase):
-    def test_validate_email_returns_true(self):
+    def test_validate_email(self):
         valid_email = "user@django.com"
         invalid_email = "user"
 
         self.assertTrue(validate_email(valid_email))
         self.assertFalse(validate_email(invalid_email))
 
-    def test_validate_mobile_returns_true(self):
+    def test_validate_mobile(self):
         valid_mobile = "1234567890"
         invalid_mobile = "1234567"
 
