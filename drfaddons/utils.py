@@ -54,9 +54,7 @@ def json_serial(obj):
     if isinstance(obj, (datetime, time)):
         serial = obj.isoformat()
         return serial
-    else:
-        return "Non-Serializable Data"
-    # raise TypeError ("Type not serializable")
+    return "Non-Serializable Data"
 
 
 def get_client_ip(request):

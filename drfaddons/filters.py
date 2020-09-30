@@ -28,5 +28,4 @@ class IsOwnerOrSuperuser(IsOwnerFilterBackend):
             return super(IsOwnerOrSuperuser, self).filter_queryset(
                 request=request, queryset=request, view=view
             )
-        else:
-            return queryset
+        return queryset
