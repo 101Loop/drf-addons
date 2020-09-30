@@ -175,8 +175,6 @@ class CreateUpdateHiddenAdmin(HideModelAdminMixin, CreateUpdateAdmin):
     Author: Himanshu Shankar (https://himanshus.com)
     """
 
-    pass
-
 
 class CreateUpdateReadOnlyInlineAdminMixin:
     """
