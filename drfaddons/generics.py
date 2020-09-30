@@ -56,46 +56,35 @@ class GenericByUserAPIView(OwnerGenericAPIView):
 
 
 class OwnerCreateAPIView(OwnerCreateModelMixin, OwnerGenericAPIView):
-    """
-    Concrete view for creating a CreateUpdateModel based model instance.
-    """
+    """Concrete view for creating a CreateUpdateModel based model instance."""
 
     def post(self, request, *args, **kwargs):
-        """"""
         return self.create(request, *args, **kwargs)
 
 
 class OwnerListAPIView(mixins.ListModelMixin, OwnerGenericAPIView):
-    """
-    Concrete view for listing a CreateUpdateModel based queryset.
-    """
+    """Concrete view for listing a CreateUpdateModel based queryset."""
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
 
 class OwnerRetrieveAPIView(mixins.RetrieveModelMixin, OwnerGenericAPIView):
-    """
-    Concrete view for retrieving a CreateUpdateModel based model instance.
-    """
+    """Concrete view for retrieving a CreateUpdateModel based model instance."""
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
 
 class OwnerDestroyAPIView(mixins.DestroyModelMixin, OwnerGenericAPIView):
-    """
-    Concrete view for deleting a CreateUpdateModel based model instance.
-    """
+    """Concrete view for deleting a CreateUpdateModel based model instance."""
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
 
 class OwnerUpdateAPIView(mixins.UpdateModelMixin, OwnerGenericAPIView):
-    """
-    Concrete view for updating a CreateUpdateModel based model instance.
-    """
+    """Concrete view for updating a CreateUpdateModel based model instance."""
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)

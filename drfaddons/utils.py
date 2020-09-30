@@ -35,9 +35,7 @@ class JsonResponse(HttpResponse):
     """
 
     def __init__(self, content, status=None, content_type="application/json"):
-        data = dict()
-        data["data"] = content
-        data["status_code"] = status
+        data = {"data": content, "status_code": status}
         json_text = json.dumps(data, default=json_serial)
         super(JsonResponse, self).__init__(
             content=json_text, status=status, content_type=content_type
@@ -56,9 +54,7 @@ def json_serial(obj):
     if isinstance(obj, (datetime, time)):
         serial = obj.isoformat()
         return serial
-    else:
-        return "Non-Serializable Data"
-    # raise TypeError ("Type not serializable")
+    return "Non-Serializable Data"
 
 
 def get_client_ip(request):
@@ -138,10 +134,7 @@ def validate_mobile(mobile):
     bool
     """
 
-    if len(mobile) >= 10:
-        return True
-    else:
-        return False
+    return len(mobile) == 10
 
 
 def paginate_data(searched_data, request_data):

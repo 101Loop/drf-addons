@@ -63,10 +63,10 @@ class ValidateAndPerformView(APIView):
         if serialized_data.is_valid():
             data, status_code = self.validated(serialized_data=serialized_data)
             return JsonResponse(data, status=status_code)
-        else:
-            return JsonResponse(
-                serialized_data.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY
-            )
+
+        return JsonResponse(
+            serialized_data.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
 
     class Meta:
         abstract = True
@@ -113,10 +113,10 @@ class AddObjectView(ValidateAndPerformView):
         if serialized_data.is_valid():
             data, status_code = self.validated(serialized_data=serialized_data)
             return JsonResponse(data, status=status_code)
-        else:
-            return JsonResponse(
-                serialized_data.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY
-            )
+
+        return JsonResponse(
+            serialized_data.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
 
     class Meta:
         abstract = True

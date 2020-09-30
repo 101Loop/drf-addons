@@ -151,9 +151,7 @@ class CreateUpdateAdmin(InlineCreateUpdateAdminMixin, admin.ModelAdmin):
         return tuple(fields)
 
     def save_model(self, request, obj, form, change):
-        """
-        Given a model instance save it to the database.
-        """
+        """Given a model instance save it to the database."""
         # Check if `created_by` has been excluded and the form is for
         # creating a new object.
         if (
@@ -176,8 +174,6 @@ class CreateUpdateHiddenAdmin(HideModelAdminMixin, CreateUpdateAdmin):
 
     Author: Himanshu Shankar (https://himanshus.com)
     """
-
-    pass
 
 
 class CreateUpdateReadOnlyInlineAdminMixin:
