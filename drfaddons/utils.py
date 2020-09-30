@@ -35,9 +35,7 @@ class JsonResponse(HttpResponse):
     """
 
     def __init__(self, content, status=None, content_type="application/json"):
-        data = dict()
-        data["data"] = content
-        data["status_code"] = status
+        data = {"data": content, "status_code": status}
         json_text = json.dumps(data, default=json_serial)
         super(JsonResponse, self).__init__(
             content=json_text, status=status, content_type=content_type
