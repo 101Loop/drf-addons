@@ -1,3 +1,7 @@
+![Build Status](https://github.com/101loop/drf-addons/workflows/CI/badge.svg)
+[![codecov](https://codecov.io/gh/101Loop/drf-addons/branch/master/graph/badge.svg)](https://codecov.io/gh/101Loop/drf-addons)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/drfaddons)
 
 # Django REST Framework Add Ons
