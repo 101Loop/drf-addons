@@ -5,8 +5,20 @@ Author: Various different people from internet. Links included
         in Source.
 """
 import json
+import smtplib
+from datetime import datetime
+from datetime import time
+from typing import List
 
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.core.paginator import EmptyPage
+from django.core.paginator import PageNotAnInteger
+from django.core.paginator import Paginator
+from django.db.models.query import QuerySet
 from django.http import HttpResponse
+from sendsms import api
 
 
 class DateTimeEncoder(json.JSONEncoder):
@@ -17,7 +29,6 @@ class DateTimeEncoder(json.JSONEncoder):
     """
 
     def default(self, obj):
-        from datetime import datetime
 
         if isinstance(obj, datetime):
             encoded_object = obj.strftime("%s")
@@ -49,7 +60,6 @@ def json_serial(obj):
     https://stackoverflow.com/a/41200652,
     https://github.com/chartmogul/chartmogul-python/blob/master/chartmogul/resource.py]
     """
-    from datetime import datetime, time
 
     if isinstance(obj, (datetime, time)):
         serial = obj.isoformat()
@@ -91,7 +101,6 @@ def validate_email(email):
     bool
     """
     from django.core.validators import validate_email
-    from django.core.exceptions import ValidationError
 
     try:
         validate_email(email)
@@ -153,7 +162,6 @@ def paginate_data(searched_data, request_data):
     -------
     data: dict
     """
-    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
     if int(request_data.data["paginator"]) > 0:
         paginator = Paginator(searched_data.data, request_data.data["paginator"])
@@ -215,14 +223,6 @@ def send_message(
     -------
     sent: dict
     """
-
-    import smtplib
-
-    from django.conf import settings
-    from django.core.mail import send_mail
-
-    from sendsms import api
-
     sent = {"success": False, "message": None}
 
     if not getattr(settings, "EMAIL_HOST", None):
@@ -311,3 +311,46 @@ def send_message(
             sent["success"] = True
 
     return sent
+
+
+def groupby_queryset_with_fields(queryset: QuerySet, fields: List) -> dict:
+    """Segregates a queryset according to given fields in a list
+
+    Parameters
+    ----------
+    queryset : QuerySet
+        The Queryset which is to be segregated
+    fields : List
+        List of fields name according to queryset will be segregated
+
+    Returns
+    -------
+    fields_qs: dict
+
+    See Also
+    -----
+    https://www.neerajbyte.com/snippet/groupby-django-queryset-data-according-to-fields-n/
+    """
+    fields_qs = {}
+    from itertools import groupby
+
+    for field in fields:
+        queryset = queryset.order_by(field)
+
+        def getter(obj):
+            related_names = field.split("__")
+            for related_name in related_names:
+                try:
+                    obj = getattr(obj, related_name)
+                except AttributeError:
+                    obj = None
+            return obj
+
+        fields_qs[field] = [
+            {"items": list(group)}
+            for _, group in groupby(
+                queryset,
+                lambda x: getattr(x, field) if "__" not in field else getter(x),
+            )
+        ]
+    return fields_qs
