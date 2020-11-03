@@ -62,8 +62,7 @@ def json_serial(obj):
     """
 
     if isinstance(obj, (datetime, time)):
-        serial = obj.isoformat()
-        return serial
+        return obj.isoformat()
     return "Non-Serializable Data"
 
 
@@ -176,16 +175,10 @@ def paginate_data(searched_data, request_data):
             "total_pages": paginator.num_pages,
             "current": curr.number,
             "total_objects": len(searched_data.data),
+            "next": curr.next_page_number() if curr.has_next() else -1,
         }
-        if curr.has_next():
-            data["next"] = curr.next_page_number()
-        else:
-            data["next"] = -1
 
-        if curr.number > 1:
-            data["previous"] = curr.previous_page_number()
-        else:
-            data["previous"] = -1
+        data["previous"] = curr.previous_page_number() if curr.number > 1 else -1
         data["objects"] = curr.object_list
     else:
         data = {
