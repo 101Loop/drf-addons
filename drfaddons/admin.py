@@ -143,9 +143,10 @@ class CreateUpdateAdmin(InlineCreateUpdateAdminMixin, admin.ModelAdmin):
             # (if not checked, form.Meta.exclude has same field twice)
             if (
                 hasattr(self.model, k)
-                and ("readonly" in v and v["readonly"])
+                and "readonly" in v
+                and v["readonly"]
                 and k not in fields
-                and (not self.exclude or (self.exclude and k not in self.exclude))
+                and (not self.exclude or k not in self.exclude)
             ):
                 fields.append(k)
         return tuple(fields)
