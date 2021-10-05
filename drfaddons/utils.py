@@ -237,7 +237,7 @@ def send_message(
     if not len(recip) > 0:
         raise ValueError("No recipient to send message.")
     # Check if the value of recipient is valid (min length: a@b.c)
-    elif len(recip[0]) < 5:
+    if len(recip[0]) < 5:
         raise ValueError("Invalid recipient.")
 
     # Check if all recipient in list are of same type
@@ -245,7 +245,7 @@ def send_message(
     for ind in range(len(recip)):
         if validate_email(recip[ind]) is not is_email:
             raise ValueError("All recipient should be of same type.")
-        elif not is_email:
+        if not is_email:
             recip[ind] = get_mobile_number(recip[ind])
 
     # Check if fallback email is indeed an email
