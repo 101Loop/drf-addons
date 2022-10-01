@@ -30,11 +30,7 @@ class DateTimeEncoder(json.JSONEncoder):
 
     def default(self, obj):
 
-        if isinstance(obj, datetime):
-            encoded_object = obj.strftime("%s")
-        else:
-            encoded_object = super(self, obj)
-        return encoded_object
+        return obj.strftime("%s") if isinstance(obj, datetime) else super(self, obj)
 
 
 class JsonResponse(HttpResponse):
@@ -79,12 +75,11 @@ def get_client_ip(request):
     -------
     ip: str
     """
-    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(",")[0]
-    else:
-        ip = request.META.get("REMOTE_ADDR")
-    return ip
+    return (
+        x_forwarded_for.split(",")[0]
+        if (x_forwarded_for := request.META.get("HTTP_X_FORWARDED_FOR"))
+        else request.META.get("REMOTE_ADDR")
+    )
 
 
 def validate_email(email):
@@ -229,9 +224,8 @@ def send_message(
         )
 
     # Check if there is any recipient
-    if not len(recip) > 0:
+    if not recip:
         raise ValueError("No recipient to send message.")
-    # Check if the value of recipient is valid (min length: a@b.c)
     elif len(recip[0]) < 5:
         raise ValueError("Invalid recipient.")
 
@@ -246,7 +240,7 @@ def send_message(
     # Check if fallback email is indeed an email
     for rcp in recip_email:
         if not validate_email(rcp):
-            raise ValueError("Invalid email provided: {}".format(rcp))
+            raise ValueError(f"Invalid email provided: {rcp}")
 
     if isinstance(recip, str):
         # For backsupport
@@ -265,7 +259,7 @@ def send_message(
                 recipient_list=recip,
             )
         except smtplib.SMTPException as ex:
-            sent["message"] = "Message sending failed!" + str(ex.args)
+            sent["message"] = f"Message sending failed!{str(ex.args)}"
             sent["success"] = False
         else:
             sent["message"] = "Message sent successfully!"
@@ -285,7 +279,7 @@ def send_message(
                 html_message=html_message,
             )
         except Exception as ex:
-            sent["message"] = "Message sending Failed!" + str(ex.args)
+            sent["message"] = f"Message sending Failed!{str(ex.args)}"
             sent["success"] = False
             send_message(
                 message=message,
