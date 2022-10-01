@@ -227,11 +227,6 @@ def send_message(
             "EMAIL_FROM must be defined in django setting "
             "for sending mail. Who is sending email?"
         )
-    if not getattr(settings, "EMAIL_FROM", None):
-        raise ValueError(
-            "EMAIL_FROM must be defined in django setting "
-            "for sending mail. Who is sending email?"
-        )
 
     # Check if there is any recipient
     if not len(recip) > 0:
