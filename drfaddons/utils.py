@@ -30,11 +30,7 @@ class DateTimeEncoder(json.JSONEncoder):
 
     def default(self, obj):
 
-        if isinstance(obj, datetime):
-            encoded_object = obj.strftime("%s")
-        else:
-            encoded_object = super(self, obj)
-        return encoded_object
+        return obj.strftime("%s") if isinstance(obj, datetime) else super(self, obj)
 
 
 class JsonResponse(HttpResponse):
@@ -80,11 +76,11 @@ def get_client_ip(request):
     ip: str
     """
     x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(",")[0]
-    else:
-        ip = request.META.get("REMOTE_ADDR")
-    return ip
+    return (
+        x_forwarded_for.split(",")[0]
+        if x_forwarded_for
+        else request.META.get("REMOTE_ADDR")
+    )
 
 
 def validate_email(email):
@@ -229,10 +225,10 @@ def send_message(
         )
 
     # Check if there is any recipient
-    if not len(recip) > 0:
+    if not recip:
         raise ValueError("No recipient to send message.")
     # Check if the value of recipient is valid (min length: a@b.c)
-    elif len(recip[0]) < 5:
+    if len(recip[0]) < 5:
         raise ValueError("Invalid recipient.")
 
     # Check if all recipient in list are of same type
@@ -240,7 +236,7 @@ def send_message(
     for ind in range(len(recip)):
         if validate_email(recip[ind]) is not is_email:
             raise ValueError("All recipient should be of same type.")
-        elif not is_email:
+        if not is_email:
             recip[ind] = get_mobile_number(recip[ind])
 
     # Check if fallback email is indeed an email
